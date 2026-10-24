@@ -1,0 +1,4226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจำลองทำข้อสอบเศรษฐศาสตร์และธุรกิจ (122 ข้อ)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-border: #bfdbfe;
+      --success: #16a34a;
+      --success-light: #f0fdf4;
+      --success-border: #86efac;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --danger-border: #fca5a5;
+      --warning: #f59e0b;
+      --warning-light: #fffbeb;
+      --warning-border: #fde68a;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Prompt', 'Sarabun', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 0.75rem 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    }
+
+    .header-stats {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-pill {
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    .stat-pill.correct {
+      background: var(--success-light);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+    }
+
+    .stat-pill.wrong {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+
+    .stat-pill.flagged {
+      background: var(--warning-light);
+      color: #d97706;
+      border: 1px solid var(--warning-border);
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 0.6rem 1.15rem;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      user-select: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn-warning {
+      background: var(--warning-light);
+      color: #b45309;
+      border-color: var(--warning-border);
+    }
+    .btn-warning.active {
+      background: var(--warning);
+      color: #fff;
+      border-color: var(--warning);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.82rem;
+      border-radius: 8px;
+    }
+
+    /* Start Screen */
+    .screen {
+      display: none;
+      flex: 1;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    #start-screen {
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .start-card {
+      background: var(--card);
+      max-width: 640px;
+      width: 100%;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .start-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .start-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .start-subtitle {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      margin-bottom: 2rem;
+    }
+
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+
+    .mode-option {
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem 1.35rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      background: #fff;
+    }
+
+    .mode-option:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .mode-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .mode-info h3 {
+      font-size: 1.08rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      color: var(--text);
+    }
+
+    .mode-info p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .feature-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .feature-chip {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #f1f5f9;
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Quiz Layout */
+    #quiz-screen {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem 1rem 3rem;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .quiz-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .quiz-sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 5rem;
+    }
+
+    /* Progress Bar */
+    .progress-wrap {
+      margin-bottom: 1rem;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+      font-weight: 500;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Question Card */
+    .question-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.25rem;
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .q-number-group {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .q-number-badge {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 8px;
+    }
+
+    .q-docx-badge {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 0.32rem 0.75rem;
+      border-radius: 8px;
+    }
+
+    .q-text {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      line-height: 1.55;
+    }
+
+    /* Choices */
+    .choices-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .choice-btn {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.15rem;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .choice-btn:hover:not(.locked) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .choice-letter {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.16s ease;
+      margin-top: 1px;
+    }
+
+    .choice-btn:hover:not(.locked) .choice-letter {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .choice-content {
+      flex: 1;
+      font-family: 'Sarabun', 'Prompt', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+
+    .choice-status-icon {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-left: auto;
+      padding-left: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    /* Answered States */
+    .choice-btn.locked {
+      cursor: default;
+    }
+
+    .choice-btn.correct-choice {
+      background: var(--success-light);
+      border-color: var(--success);
+      color: #065f46;
+    }
+    .choice-btn.correct-choice .choice-letter {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .choice-btn.wrong-choice {
+      background: var(--danger-light);
+      border-color: var(--danger);
+      color: #991b1b;
+    }
+    .choice-btn.wrong-choice .choice-letter {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    /* Feedback Banner */
+    .feedback-box {
+      margin-top: 1.35rem;
+      padding: 1.1rem 1.25rem;
+      border-radius: 12px;
+      display: none;
+      align-items: flex-start;
+      gap: 0.85rem;
+      animation: fadeIn 0.22s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-box.show {
+      display: flex;
+    }
+
+    .feedback-box.is-correct {
+      background: var(--success-light);
+      border: 1px solid var(--success-border);
+      color: #166534;
+    }
+
+    .feedback-box.is-wrong {
+      background: var(--danger-light);
+      border: 1px solid var(--danger-border);
+      color: #991b1b;
+    }
+
+    .feedback-icon {
+      font-size: 1.35rem;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .feedback-body h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .feedback-body p {
+      font-size: 0.94rem;
+      line-height: 1.45;
+    }
+
+    /* Navigation Footer */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    /* Sidebar Question Grid */
+    .sidebar-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.35rem;
+      background: #f1f5f9;
+      padding: 0.3rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .filter-tab {
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      padding: 0.4rem 0.2rem;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-tab.active {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .q-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.45rem;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .q-grid-item {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.15s;
+    }
+
+    .q-grid-item:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .q-grid-item.current {
+      outline: 2.5px solid var(--primary);
+      outline-offset: 1px;
+      font-weight: 700;
+    }
+
+    .q-grid-item.answered-correct {
+      background: var(--success-light);
+      border-color: var(--success-border);
+      color: var(--success);
+    }
+
+    .q-grid-item.answered-wrong {
+      background: var(--danger-light);
+      border-color: var(--danger-border);
+      color: var(--danger);
+    }
+
+    .q-grid-item .flag-dot {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 14px;
+      height: 14px;
+      background: var(--warning);
+      color: #fff;
+      border-radius: 999px;
+      font-size: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .sidebar-legend {
+      margin-top: 1rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .sidebar-actions {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Result / Summary Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--card);
+      border-radius: 20px;
+      max-width: 520px;
+      width: 100%;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.18);
+      text-align: center;
+    }
+
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      border: 4px solid var(--primary);
+      color: var(--primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+
+    .score-circle .big {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .score-circle .small {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin: 1.25rem 0 1.5rem;
+    }
+
+    .summary-box {
+      padding: 0.75rem;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+    }
+
+    .summary-box .num {
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .summary-box .lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .kbd-hint {
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .kbd {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.73rem;
+      font-family: monospace;
+    }
+
+    @media (max-width: 900px) {
+      #quiz-screen {
+        flex-direction: column;
+      }
+      .quiz-sidebar {
+        width: 100%;
+        position: static;
+      }
+      .q-grid {
+        grid-template-columns: repeat(8, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .q-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+      .question-card {
+        padding: 1.25rem;
+      }
+      .q-text {
+        font-size: 1.08rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">📝</div>
+        <div>
+          <div>Exam Simulator</div>
+          <div style="font-size: 0.75rem; font-weight: 400; color: var(--text-muted);">ชุดข้อสอบเศรษฐศาสตร์และธุรกิจ 122 ข้อ (ไม่จำกัดเวลา)</div>
+        </div>
+      </div>
+
+      <div class="header-stats" id="header-stats" style="display: none;">
+        <span class="stat-pill" id="stat-mode">โหมด: ปกติ</span>
+        <span class="stat-pill" id="stat-progress">ทำแล้ว 0/122</span>
+        <span class="stat-pill correct" id="stat-correct">✔ ถูก 0</span>
+        <span class="stat-pill wrong" id="stat-wrong">✖ ผิด 0</span>
+        <span class="stat-pill flagged" id="stat-flagged">★ ติดดาว 0</span>
+        <button class="btn btn-outline btn-sm" onclick="confirmRestart()">🔄 เปลี่ยนโหมด / เริ่มใหม่</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Start Screen -->
+  <main id="start-screen" class="screen active">
+    <div class="start-card">
+      <div class="start-badge">📚 ฐานข้อมูลครบ 122 ข้อจากไฟล์ Finak_Econ_115.docx</div>
+      <h1 class="start-title">ระบบจำลองทำข้อสอบ</h1>
+      <p class="start-subtitle">เลือกรูปแบบการทำข้อสอบที่คุณต้องการด้านล่าง สามารถย้อนกลับข้อเก่า ปักธง/ติดดาว และดูเฉลยได้ทันทีหลังตอบ</p>
+
+      <div class="mode-grid">
+        <div class="mode-option" onclick="startQuiz(true)">
+          <div class="mode-icon">🔀</div>
+          <div class="mode-info">
+            <h3>1) Random โจทย์และช้อยส์</h3>
+            <p>สุ่มลำดับข้อสอบทั้ง 122 ข้อ และสุ่มตำแหน่งตัวเลือก ก-ง ใหม่ทุกครั้ง พร้อมแสดงกำกับชัดเจน เช่น <strong>"ข้อที่ 1 (ข้อในไฟล์ .docx ข้อที่ 19)"</strong></p>
+          </div>
+        </div>
+
+        <div class="mode-option" onclick="startQuiz(false)">
+          <div class="mode-icon">📋</div>
+          <div class="mode-info">
+            <h3>2) ไม่ Random โจทย์และช้อยส์</h3>
+            <p>เรียงลำดับข้อสอบข้อที่ 1 ถึง 122 และเรียงตัวเลือกตรงตามไฟล์ต้นฉบับ <strong>.docx</strong> ทุกประการ</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-list">
+        <span class="feature-chip">⚡ เฉลยคำตอบทันทีเมื่อคลิกเลือก</span>
+        <span class="feature-chip">⬅️ ย้อนกลับไปดูข้อเก่าได้ตลอด</span>
+        <span class="feature-chip">♾️ ไม่มีการจับเวลา</span>
+        <span class="feature-chip">⭐ ปักธง/ติดดาวเพื่อทบทวน</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- Quiz Screen -->
+  <main id="quiz-screen" class="screen">
+    <div class="quiz-main">
+      <!-- Progress Bar -->
+      <div class="progress-wrap">
+        <div class="progress-labels">
+          <span id="progress-text">ความคืบหน้า: ตอบแล้ว 0 จาก 122 ข้อ (0%)</span>
+          <span id="filter-indicator" style="color: var(--primary);">แสดง: ทั้งหมด (122 ข้อ)</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="question-card" id="question-card">
+        <div class="q-header">
+          <div class="q-number-group">
+            <span class="q-number-badge" id="q-display-no">ข้อที่ 1 / 122</span>
+            <span class="q-docx-badge" id="q-docx-no">ข้อในไฟล์ .docx ข้อที่ 1</span>
+          </div>
+
+          <button class="btn btn-warning btn-sm" id="flag-btn" onclick="toggleFlag()">
+            <span id="flag-icon">☆</span>
+            <span id="flag-label">ปักธง / ติดดาว</span>
+          </button>
+        </div>
+
+        <div class="q-text" id="q-text">กำลังโหลดโจทย์...</div>
+
+        <div class="choices-list" id="choices-list"></div>
+
+        <!-- Immediate Answer Feedback -->
+        <div class="feedback-box" id="feedback-box">
+          <div class="feedback-icon" id="feedback-icon">✔</div>
+          <div class="feedback-body">
+            <h4 id="feedback-title">ตอบถูกต้อง!</h4>
+            <p id="feedback-detail"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="nav-bar">
+        <div class="nav-group">
+          <button class="btn btn-outline" id="prev-btn" onclick="prevQuestion()">
+            ⬅️ ข้อก่อนหน้า
+          </button>
+          <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">
+            ข้อถัดไป ➡️
+          </button>
+        </div>
+
+        <div class="nav-group">
+          <button class="btn btn-outline" id="retry-current-btn" onclick="resetCurrentQuestion()" style="display: none;">
+            🔁 ลองตอบข้อนี้ใหม่
+          </button>
+          <button class="btn btn-outline" onclick="showSummaryModal()">
+            📊 สรุปผลคะแนน
+          </button>
+        </div>
+      </div>
+
+      <div class="kbd-hint">
+        💡 คีย์ลัด: กด <span class="kbd">1</span>-<span class="kbd">4</span> เพื่อเลือกตอบ, <span class="kbd">←</span> ย้อนกลับ, <span class="kbd">→</span> ข้อถัดไป, <span class="kbd">F</span> ปักธง/ติดดาว
+      </div>
+    </div>
+
+    <!-- Sidebar Navigator -->
+    <aside class="quiz-sidebar">
+      <div class="sidebar-title">
+        <span>สารบัญข้อสอบ</span>
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;" id="grid-count-label">122 ข้อ</span>
+      </div>
+
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">ทั้งหมด</button>
+        <button class="filter-tab" data-filter="flagged" onclick="setFilter('flagged')">★ ติดดาว</button>
+        <button class="filter-tab" data-filter="unanswered" onclick="setFilter('unanswered')">ยังไม่ทำ</button>
+        <button class="filter-tab" data-filter="wrong" onclick="setFilter('wrong')">ตอบผิด</button>
+      </div>
+
+      <div class="q-grid" id="q-grid"></div>
+
+      <div class="sidebar-legend">
+        <div class="legend-item">
+          <span class="legend-box" style="background: var(--success-light); border-color: var(--success-border);"></span>
+          <span>ตอบถูก</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box" style="background: var(--danger-light); border-color: var(--danger-border);"></span>
+          <span>ตอบผิด</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box" style="background: #fff;"></span>
+          <span>ยังไม่ตอบ</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box" style="background: var(--warning); border-color: var(--warning); border-radius: 50%;"></span>
+          <span>ปักธง/ติดดาว</span>
+        </div>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="btn btn-outline btn-sm" id="practice-flagged-btn" onclick="jumpToNextFlagged()" style="width: 100%;">
+          ⭐ ไปยังข้อที่ปักธง/ติดดาวถัดไป
+        </button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Summary Modal -->
+  <div class="modal-backdrop" id="summary-modal">
+    <div class="modal-card">
+      <h2 style="font-size: 1.4rem; margin-bottom: 1rem;">สรุปผลการทำข้อสอบ</h2>
+      <div class="score-circle">
+        <span class="big" id="modal-score-pct">0%</span>
+        <span class="small" id="modal-score-raw">0 / 122</span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.92rem;" id="modal-subtitle">คุณสามารถกดปิดหน้าต่างนี้เพื่อย้อนกลับไปทบทวนข้อที่ปักธงหรือข้อที่ตอบผิดได้ตลอดเวลา</p>
+
+      <div class="summary-stats">
+        <div class="summary-box">
+          <div class="num" style="color: var(--success);" id="modal-correct">0</div>
+          <div class="lbl">ตอบถูก</div>
+        </div>
+        <div class="summary-box">
+          <div class="num" style="color: var(--danger);" id="modal-wrong">0</div>
+          <div class="lbl">ตอบผิด</div>
+        </div>
+        <div class="summary-box">
+          <div class="num" style="color: #d97706;" id="modal-flagged">0</div>
+          <div class="lbl">ติดดาวไว้</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+        <button class="btn btn-outline" onclick="closeSummaryModal()">กลับไปดูข้อสอบต่อ</button>
+        <button class="btn btn-primary" onclick="closeSummaryModal(); confirmRestart();">เริ่มทำใหม่ / เปลี่ยนโหมด</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Raw 122 questions extracted from Finak_Econ_115.docx
+    const RAW_QUESTIONS = [
+  {
+    "origNo": 1,
+    "question": "ผู้ประกอบการธุรกิจควรมีความรับผิดชอบต่อสังคมอย่างไร",
+    "rawQuestion": "ผู้ประกอบการธุรกิจควรมีความรับผิดชอบต่อสังคมอย่างไร",
+    "choices": [
+      {
+        "text": "ถูกทุกข้อ",
+        "isCorrect": true
+      },
+      {
+        "text": "ไม่ประกอบการที่ก่อให้เกิดผลเสียต่อสภาพแวดล้อม",
+        "isCorrect": false
+      },
+      {
+        "text": "ทำให้คนในสังคมมีความเป็นอยู่ที่ดีขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "ผลิตสินค้าและบริการที่มีคุณภาพเพื่อสนองความต้องการของคนในสังคม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 2,
+    "question": "ข้อใดคือความหมายที่ถูกต้องที่สุดของ\"นวัตกรรม”",
+    "rawQuestion": "ข้อใดคือความหมายที่ถูกต้องที่สุดของ\"นวัตกรรม”",
+    "choices": [
+      {
+        "text": "การกระทำที่ไม่เคยมีมาก่อน",
+        "isCorrect": false
+      },
+      {
+        "text": "การกระทำที่เอาแบบอย่างมาจากที่อื่น",
+        "isCorrect": false
+      },
+      {
+        "text": "การกระทำที่ใช้แนวคิดหรือวิธีปฏิบัติใหม่ๆ เพื่อแก้ปัญหาและพัฒนางาน",
+        "isCorrect": true
+      },
+      {
+        "text": "การกระทำที่รื้อฟื้นมาจากของเดิม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 3,
+    "question": "องค์ประกอบที่สำคัญที่สุดในการดำเนินธุรกิจคือข้อใด",
+    "rawQuestion": "องค์ประกอบที่สำคัญที่สุดในการดำเนินธุรกิจคือข้อใด",
+    "choices": [
+      {
+        "text": "บุคคลหรือแรงงาน",
+        "isCorrect": true
+      },
+      {
+        "text": "เงินทุน",
+        "isCorrect": false
+      },
+      {
+        "text": "อุปกรณ์และวัตถุดิบ",
+        "isCorrect": false
+      },
+      {
+        "text": "การจัดการดำเนินงานทางธุรกิจ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 4,
+    "question": "วารีกู้เงินธนาคารมาทำธุรกิจ ธนาคารคิดดอกเบี้ย 5% ต่อปี สัญญากู้เงินระบุให้วารีต้องจ่าย ดอกเบี้ยให้ธนาคารทุกเดือน และจ่ายเงินกู้(เงินต้น)คืน เมื่อสัญญากู้ครบ 6 เดือน วารีจ่าย ดอกเบี้ยให้ธนาคารเดือนละ 625 บาททุกเดือน ถามว่าวารีกู้เงินจากธนาคารกี่บาท",
+    "rawQuestion": "วารีกู้เงินธนาคารมาทำธุรกิจ ธนาคารคิดดอกเบี้ย 5% ต่อปี สัญญากู้เงินระบุให้วารีต้องจ่าย ดอกเบี้ยให้ธนาคารทุกเดือน และจ่ายเงินกู้(เงินต้น)คืน เมื่อสัญญากู้ครบ 6 เดือน วารีจ่าย ดอกเบี้ยให้ธนาคารเดือนละ 625 บาททุกเดือน ถามว่าวารีกู้เงินจากธนาคารกี่บาท *",
+    "choices": [
+      {
+        "text": "100,000 บาท",
+        "isCorrect": false
+      },
+      {
+        "text": "150,000 บาท",
+        "isCorrect": true
+      },
+      {
+        "text": "200,000 บาท",
+        "isCorrect": false
+      },
+      {
+        "text": "250,000 บาท",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 5,
+    "question": "ข้อใดหมายถึงแหล่งเงินทุนภายในกิจการ",
+    "rawQuestion": "ข้อใดหมายถึงแหล่งเงินทุนภายในกิจการ *",
+    "choices": [
+      {
+        "text": "เงินกู้ยืมระยะยาว",
+        "isCorrect": false
+      },
+      {
+        "text": "เงินกู้ยืมระยะสั้น",
+        "isCorrect": false
+      },
+      {
+        "text": "เงินที่ได้จากค่าสินไหมทดแทน",
+        "isCorrect": false
+      },
+      {
+        "text": "เงินทุนของตนเอง หรือเงินที่มาจากการเก็บออม",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 6,
+    "question": "แผนภูมิองค์กร (Organization Chart) แสดงให้เห็นถึง",
+    "rawQuestion": "แผนภูมิองค์กร (Organization Chart) แสดงให้เห็นถึง *",
+    "choices": [
+      {
+        "text": "การติดต่อประสานงานภายใน",
+        "isCorrect": false
+      },
+      {
+        "text": "ความสำคัญขององค์การ",
+        "isCorrect": false
+      },
+      {
+        "text": "สายการบังคับบัญชา",
+        "isCorrect": true
+      },
+      {
+        "text": "อำนาจการตัดสินใจของแต่ละตำแหน่ง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 7,
+    "question": "ความขาดแคลนที่เกิดในระบบเศรษฐกิจ มีสาเหตุพื้นฐานมาจากข้อใด",
+    "rawQuestion": "ความขาดแคลนที่เกิดในระบบเศรษฐกิจ มีสาเหตุพื้นฐานมาจากข้อใด *",
+    "choices": [
+      {
+        "text": "ความต้องการของมนุษย์ และจำนวนทรัพยากรไม่สมดุลกัน",
+        "isCorrect": true
+      },
+      {
+        "text": "มนุษย์มีความต้องการไม่จำกัดและแสวงหาความพอใจสูงสุด",
+        "isCorrect": false
+      },
+      {
+        "text": "การแสวงหาทรัพยากรใหม่ ๆ ไม่ทันกับการหมดไปของทรัพยากร",
+        "isCorrect": false
+      },
+      {
+        "text": "การใช้ทรัพยากรของระบบเศรษฐกิจเป็นไปอย่างไม่เต็มที่",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 8,
+    "question": "ข้อใดไม่รวมอยู่ในหลักการจัดทำแผนธุรกิจ",
+    "rawQuestion": "ข้อใดไม่รวมอยู่ในหลักการจัดทำแผนธุรกิจ *",
+    "choices": [
+      {
+        "text": "การออกแบบรูปเล่มให้เหมาะสม",
+        "isCorrect": false
+      },
+      {
+        "text": "หลีกเลี่ยงสิ่งที่เกินความจริง",
+        "isCorrect": false
+      },
+      {
+        "text": "หลีกเลี่ยงสิ่งที่หลากหลายมากเกินไป",
+        "isCorrect": false
+      },
+      {
+        "text": "การมุ่งตอบสนองความต้องการของตนเอง",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 9,
+    "question": "ข้อใดที่ไม่ใช่หลัก 3 R's",
+    "rawQuestion": "ข้อใดที่ไม่ใช่หลัก 3 R's *",
+    "choices": [
+      {
+        "text": "Recycle",
+        "isCorrect": false
+      },
+      {
+        "text": "Refill",
+        "isCorrect": false
+      },
+      {
+        "text": "Reorganize",
+        "isCorrect": true
+      },
+      {
+        "text": "Reuse",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 10,
+    "question": "ณยฎา สามารถประสานงานระหว่างกลุ่มบริหารและหัวหน้าสหภาพแรงงาน โดยพยายามจัดอคติเกี่ยวกับการกดขี้แรงงานเพศหญิงในโรงงาน ณยภามีทักษะด้านใด",
+    "rawQuestion": "ณยฎา สามารถประสานงานระหว่างกลุ่มบริหารและหัวหน้าสหภาพแรงงาน โดยพยายามจัดอคติเกี่ยวกับการกดขี้แรงงานเพศหญิงในโรงงาน ณยภามีทักษะด้านใด*",
+    "choices": [
+      {
+        "text": "ทักษะด้านความคิด",
+        "isCorrect": false
+      },
+      {
+        "text": "ทักษะด้านเทคนิค",
+        "isCorrect": false
+      },
+      {
+        "text": "ทักษะด้านคน",
+        "isCorrect": true
+      },
+      {
+        "text": "ทักษะด้านการประสานงาน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 11,
+    "question": "ข้อใดเป็นผลที่เกิดจากการที่มาตรฐานการครองชีพของคนอยู่ในระดับที่ดีขึ้นในปัจจุบัน",
+    "rawQuestion": "ข้อใดเป็นผลที่เกิดจากการที่มาตรฐานการครองชีพของคนอยู่ในระดับที่ดีขึ้นในปัจจุบัน *",
+    "choices": [
+      {
+        "text": "มีโรงงานผลิตสินค้าเพิ่มมากขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้บริโภคใช้ความรอบคอบยิ่งขึ้นในการตัดสินใจซื้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "คนมีความต้องการในสินค้าและบริการมากขึ้น",
+        "isCorrect": true
+      },
+      {
+        "text": "คนมีรายได้เฉลี่ยสูงขึ้น",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 12,
+    "question": "งบดุลหมายถึงข้อใด",
+    "rawQuestion": "งบดุลหมายถึงข้อใด *",
+    "choices": [
+      {
+        "text": "งบแสดงฐานะทางการเงินขององค์กรธุรกิจ ณ วันใดวันหนึ่ง",
+        "isCorrect": true
+      },
+      {
+        "text": "งบการเงินที่ให้ข้อมูลเกี่ยวกับกระแสเงินสดรับ-จ่ายของกิจการในช่วยวระยะเวลาหนึ่ง",
+        "isCorrect": false
+      },
+      {
+        "text": "รายที่แสดงถึงผลการดำเนินงานของกิจการในการดำเนินงานสำหรับงวดเวลาหนึ่ง",
+        "isCorrect": false
+      },
+      {
+        "text": "รายงานที่แสดงถึงความสำเร็จของกิจการในการดำเนินงานสำหรับงวดเวลาหนึ่ง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 13,
+    "question": "จากคลิปวีดีโอ\"จากวิศวกรนาซ่า สู่นักธุรกิจหมื่นล้าน” ที่เปิดให้ชมในชั้นเรียนสินค้าในข้อใดที่คุณ อภิจิต เจริญเวชชการ ทำงานในบริษัทใดก่อนผันตัวไปประกอบอาชีพส่วนตัว",
+    "rawQuestion": "จากคลิปวีดีโอ\"จากวิศวกรนาซ่า สู่นักธุรกิจหมื่นล้าน” ที่เปิดให้ชมในชั้นเรียนสินค้าในข้อใดที่คุณ อภิจิต เจริญเวชชการ ทำงานในบริษัทใดก่อนผันตัวไปประกอบอาชีพส่วนตัว *",
+    "choices": [
+      {
+        "text": "บริษัท ESSO",
+        "isCorrect": true
+      },
+      {
+        "text": "บริษัท TPI",
+        "isCorrect": false
+      },
+      {
+        "text": "บริษัท PTT",
+        "isCorrect": false
+      },
+      {
+        "text": "บริษัท SCG",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 14,
+    "question": "ข้อใดคือธุรกิจขนาดกลางและขนาดย่อม (SMEs).",
+    "rawQuestion": "ข้อใดคือธุรกิจขนาดกลางและขนาดย่อม (SMEs). *",
+    "choices": [
+      {
+        "text": "อุตสาหกรรมการผลิต",
+        "isCorrect": false
+      },
+      {
+        "text": "ถูกทุกข้อ",
+        "isCorrect": true
+      },
+      {
+        "text": "กิจการค้าปลีก ธุรกิจบริการ",
+        "isCorrect": false
+      },
+      {
+        "text": "กิจการค้าส่ง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 15,
+    "question": "เพราะเหตุใดผู้จัดการผลิต จึงเรียกว่าผู้ประกอบการ",
+    "rawQuestion": "เพราะเหตุใดผู้จัดการผลิต จึงเรียกว่าผู้ประกอบการ *",
+    "choices": [
+      {
+        "text": "เพราะได้ทำหน้าที่เลือกสินค้าและบริการมาบริโภค",
+        "isCorrect": false
+      },
+      {
+        "text": "เพราะได้ทำการผลิตที่สำคัญชนิดหนึ่งในการผลิตสินค้าและบริการ",
+        "isCorrect": false
+      },
+      {
+        "text": "เพราะมีกระบวนการผลิตสินค้าและบริการ หรือการสะสมสินค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "เพราะได้ทำหน้าที่เพื่อตัดสินใจเกี่ยวกับปัญหาทางเศรษฐกิจว่า ผลิตอะไร ผลิตเพื่อใคร",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 16,
+    "question": "ปัญหาตลาดการค้าในต่างประเทศของไทยคือข้อใด",
+    "rawQuestion": "ปัญหาตลาดการค้าในต่างประเทศของไทยคือข้อใด *",
+    "choices": [
+      {
+        "text": "การถูกกีดกันทางการค้าจากสหรัฐอเมริกา",
+        "isCorrect": false
+      },
+      {
+        "text": "ตลาดการค้าในต่างประเทศของไทยยังไม่กว้างขวางพอ",
+        "isCorrect": false
+      },
+      {
+        "text": "ความล่าช้า ในการขนส่งสินค้าเกษตรกรรมออกสู่ตลาดต่างประเทศ",
+        "isCorrect": false
+      },
+      {
+        "text": "คุณภาพสินค้าไม่ได้มาตรฐาน ตลาดต่างประเทศไม่ยอมรับ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 17,
+    "question": "ข้อความใดสัมพันธ์กับระบบเศรษฐกิจ",
+    "rawQuestion": "ข้อความใดสัมพันธ์กับระบบเศรษฐกิจ *",
+    "choices": [
+      {
+        "text": "การดำเนินกิจกรรมต่างๆ ของรัฐบาลที่เกี่ยวข้องกับธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "ความร่วมมือกันของมนุษย์ในการสร้างและใช้ทรัพยากร เพื่อสนองความต้องการของสมาชิกใน สังคมที่มีการปฏิบัติคล้ายคลึงกัน",
+        "isCorrect": true
+      },
+      {
+        "text": "การดำเนินงานต่างๆ ที่มีความเกี่ยวข้องกับผู้ผลิตจำนวนมาก",
+        "isCorrect": false
+      },
+      {
+        "text": "การนำปัจจัยการผลิตออกสู่ตลาด ในรูปแบบต่างๆ เพื่อประโยชน์ต่อผู้ผลิต แต่คำนึงถึงความเป็นธรรมของผู้บริโภค",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 18,
+    "question": "SWOT ใช้ในองค์ประกอบใดในแผนธุรกิจ",
+    "rawQuestion": "SWOT ใช้ในองค์ประกอบใดในแผนธุรกิจ *",
+    "choices": [
+      {
+        "text": "แผนฉุกเฉินของธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "การดำเนินงานของธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "บทสรุปของผู้บริหาร",
+        "isCorrect": false
+      },
+      {
+        "text": "การวิเคราะห์สถานการณ์ของธุรกิจ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 19,
+    "question": "ผลิตผลงานการเกษตรควรกำหนดกลยุทธ์ทางการตลาดข้อใด ด้านผลิตภัณฑ์ด้านราคาด้านช่องทางการจัดจำหน่ายด้านการส่งเสริมการตลาด",
+    "rawQuestion": "ผลิตผลงานการเกษตรควรกำหนดกลยุทธ์ทางการตลาดข้อใด ด้านผลิตภัณฑ์ด้านราคาด้านช่องทางการจัดจำหน่ายด้านการส่งเสริมการตลาด *",
+    "choices": [
+      {
+        "text": "ผลิตผลงานการเกษตรควรกำหนดกลยุทธ์ทางการตลาดข้อใด",
+        "isCorrect": false
+      },
+      {
+        "text": "ด้านการส่งเสริมการตลาด",
+        "isCorrect": false
+      },
+      {
+        "text": "ด้านผลิตภัณฑ์",
+        "isCorrect": true
+      },
+      {
+        "text": "ด้านราคา",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 20,
+    "question": "ข้อใดเป็นโครงสร้างพื้นฐานด้านเทคโนโลยีสารสนเทศ",
+    "rawQuestion": "ข้อใดเป็นโครงสร้างพื้นฐานด้านเทคโนโลยีสารสนเทศ *",
+    "choices": [
+      {
+        "text": "ขนส่งมวลชน",
+        "isCorrect": false
+      },
+      {
+        "text": "ระบบโทรศัพท์ อินเตอร์เน็ตความเร็วสูง",
+        "isCorrect": true
+      },
+      {
+        "text": "ประปา",
+        "isCorrect": false
+      },
+      {
+        "text": "ระบบอากาศยาน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 21,
+    "question": "ประชาชนมีงานทำมากขึ้นรายได้สูงขึ้นมีเงินมาซื้อสินค้าเพื่ออำนวยความสะดวกมากขึ้น จากที่กล่าวมาตรงกับความสำคัญของธุรกิจในหัวข้อใด",
+    "rawQuestion": "ประชาชนมีงานทำมากขึ้นรายได้สูงขึ้นมีเงินมาซื้อสินค้าเพื่ออำนวยความสะดวกมากขึ้น จากที่กล่าวมาตรงกับความสำคัญของธุรกิจในหัวข้อใด *",
+    "choices": [
+      {
+        "text": "การยกระดับค่าครองชีพของประชาชนให้สูงขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "การทำให้เศรษฐกิจดีขึ้น",
+        "isCorrect": true
+      },
+      {
+        "text": "การเพิ่มรายได้ให้กับภาครัฐ",
+        "isCorrect": false
+      },
+      {
+        "text": "การสร้างความเจริญก้าวหน้าทางเทคโนโลยี",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 22,
+    "question": "ข้อใดเป็นแนวความคิดการตลาดเพื่อสังคม (Societal marketing oriented)",
+    "rawQuestion": "ข้อใดเป็นแนวความคิดการตลาดเพื่อสังคม (Societal marketing oriented)*",
+    "choices": [
+      {
+        "text": "มุ่งเน้นการสร้างเครือข่ายทางการตลาดและลูกค้า",
+        "isCorrect": true
+      },
+      {
+        "text": "มุ่งเน้นการสร้างสัมพันธภาพกับลูกค้าแบบสองทาง",
+        "isCorrect": false
+      },
+      {
+        "text": "มุ่งเน้นในตัวผลิตภัณฑ์ที่มีคุณภาพประสิทธิภาพและมีนวัตกรรมดีที่สุด",
+        "isCorrect": false
+      },
+      {
+        "text": "มุ่งเน้นการกระตุ้นผู้บริโภคให้เกิดความสนใจและต้องการในผลิตภัณฑ์ของตน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 23,
+    "question": "ข้อใดเป็นโอกาสของกิจการ",
+    "rawQuestion": "ข้อใดเป็นโอกาสของกิจการ *",
+    "choices": [
+      {
+        "text": "สินค้ามีลักษณะคล้ายคู่แข่งขัน",
+        "isCorrect": false
+      },
+      {
+        "text": "มีเงินทุนหมุนเวียนเพียงพอ",
+        "isCorrect": false
+      },
+      {
+        "text": "ราคาสินค้าถูกกว่าคู่แข่งขัน",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้ามีอำนาจซื้อเพราะราคาถูกกว่าชนิดอื่น",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 24,
+    "question": "ข้อใดอธิบายถึง หน่วยครัวเรือน ได้ดีที่สุด",
+    "rawQuestion": "ข้อใดอธิบายถึง หน่วยครัวเรือน ได้ดีที่สุด *",
+    "choices": [
+      {
+        "text": "นายสุกฤษ อาศัยอยู่ในหอพัก โดยช่วยกันจ่ายค่าสาธารณูปโภค",
+        "isCorrect": false
+      },
+      {
+        "text": "นายกฤษณ์ อาศัยอยู่กับครอบครัว โดยทำหน้าที่หาเลี้ยงอุปการีและออกค่าใช้จ่ายในบ้าน",
+        "isCorrect": true
+      },
+      {
+        "text": "นายภัทรพล อาศัยอยู่ในค่ายทหารที่มีอาหารกลางวันรับประทานฟรี",
+        "isCorrect": false
+      },
+      {
+        "text": "นางสาวเฉลิมขวัญ อาศัย ในชุมชนแห่งหนึ่งที่มีการใช้ทรัพยากรร่วมกัน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 25,
+    "question": "วงจรธุรกิจช่วงที่ผ่านการเจริญรุ่งเรืองจนสูงสุดแล้วส่งผลให้เศรษฐกิจเกิดการปรับตัวลดลง เช่น จากการใช้ปัจจัยการผลิตอย่างเต็มที่ ต้นทุนการผลิตสูง ราคาสินค้าและบริการลดลง ทำให้ต้องลด การจ้างแรงงาน ลดการผลิตและลดการลงทุน คือช่วงใดในวงจรธุรกิจ",
+    "rawQuestion": "วงจรธุรกิจช่วงที่ผ่านการเจริญรุ่งเรืองจนสูงสุดแล้วส่งผลให้เศรษฐกิจเกิดการปรับตัวลดลง เช่น จากการใช้ปัจจัยการผลิตอย่างเต็มที่ ต้นทุนการผลิตสูง ราคาสินค้าและบริการลดลง ทำให้ต้องลด การจ้างแรงงาน ลดการผลิตและลดการลงทุน คือช่วงใดในวงจรธุรกิจ *",
+    "choices": [
+      {
+        "text": "ช่วงหดตัว",
+        "isCorrect": false
+      },
+      {
+        "text": "ช่วงขยายตัว",
+        "isCorrect": false
+      },
+      {
+        "text": "ช่วงถดถอย",
+        "isCorrect": true
+      },
+      {
+        "text": "ช่วงฟื้นตัว",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 26,
+    "question": "ข้อใดถือว่าเป็นปัจจัยที่กิจการไม่สามารถควบคุมได้",
+    "rawQuestion": "ข้อใดถือว่าเป็นปัจจัยที่กิจการไม่สามารถควบคุมได้ *",
+    "choices": [
+      {
+        "text": "ภาพลักษณ์ ชื่อเสียงขององค์กร",
+        "isCorrect": false
+      },
+      {
+        "text": "คุณภาพของบุคลากร",
+        "isCorrect": false
+      },
+      {
+        "text": "ความสามารถในการค้นคว้าวิจัย",
+        "isCorrect": false
+      },
+      {
+        "text": "ราคาและคุณภาพปัจจัยการผลิต",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 27,
+    "question": "ข้อใด ไม่ใช่ ปัจจัยที่มีอิทธิพลต่อนาดาการใช้จ่ายของครัวเรือน",
+    "rawQuestion": "ข้อใด ไม่ใช่ ปัจจัยที่มีอิทธิพลต่อนาดาการใช้จ่ายของครัวเรือน *",
+    "choices": [
+      {
+        "text": "ความสามารถในการหารายได้ของครัวเรือน",
+        "isCorrect": false
+      },
+      {
+        "text": "การเลียนแบบวัฒนธรรมตะวันตก",
+        "isCorrect": false
+      },
+      {
+        "text": "ความผันผวนทางการเมือง",
+        "isCorrect": true
+      },
+      {
+        "text": "การเจริญเติบโตของธุรกิจ E-commerce",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 28,
+    "question": "งบการเงินประเภทใดที่แสดงถึงการดำเนินงานของกิจการในช่วงระยะเวลาใดระยะเวลาหนึ่ง",
+    "rawQuestion": "งบการเงินประเภทใดที่แสดงถึงการดำเนินงานของกิจการในช่วงระยะเวลาใดระยะเวลาหนึ่ง *",
+    "choices": [
+      {
+        "text": "งบดุล",
+        "isCorrect": false
+      },
+      {
+        "text": "งบทดลอง",
+        "isCorrect": false
+      },
+      {
+        "text": "งบกำไรขาดทุน",
+        "isCorrect": true
+      },
+      {
+        "text": "งบกระแสเงินสด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 29,
+    "question": "การกำหนดกิจกรรมต่างๆที่จำเป็นสำหรับการบรรลุเป้าหมายเพื่อ ประกอบการจัดโครงสร้าง บทบาทต่างๆ เป็นหน้าที่ในด้านใด ?",
+    "rawQuestion": "การกำหนดกิจกรรมต่างๆที่จำเป็นสำหรับการบรรลุเป้าหมายเพื่อ ประกอบการจัดโครงสร้าง บทบาทต่างๆ เป็นหน้าที่ในด้านใด ? *",
+    "choices": [
+      {
+        "text": "การบังคับบัญชาสั่งการ",
+        "isCorrect": false
+      },
+      {
+        "text": "การควบคุม",
+        "isCorrect": false
+      },
+      {
+        "text": "การวางแผน",
+        "isCorrect": false
+      },
+      {
+        "text": "การจัดองค์การ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 30,
+    "question": "ข้อใด ไม่ใช่ จรรยาบรรณของธุรกิจที่มีต่อลูกค้า",
+    "rawQuestion": "ข้อใด ไม่ใช่ จรรยาบรรณของธุรกิจที่มีต่อลูกค้า *",
+    "choices": [
+      {
+        "text": "นายกษิดิศ ขายผักคุณภาพในราคาเกินทุนเล็กน้อย",
+        "isCorrect": false
+      },
+      {
+        "text": "นายณภัทร ขายผักคุณภาพต่ำ ในราคาสูงเล็กน้อย",
+        "isCorrect": false
+      },
+      {
+        "text": "นางสาวสุทธิดา ขายขนมปังใกล้มหอดอายุให้ลูกค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "นายพัฒนาชาติ หยิบผลไม้เน่าผสมขายให้ลูกค้า",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 31,
+    "question": "ข้อใดที่แสดงว่าผู้ประกอบการมีจรรยาบรรณต่อลูกค้า",
+    "rawQuestion": "ข้อใดที่แสดงว่าผู้ประกอบการมีจรรยาบรรณต่อลูกค้า *",
+    "choices": [
+      {
+        "text": "ไม่นำเสนอข่าวสารที่ไม่เป็นความจริงในตัวสินค้า",
+        "isCorrect": true
+      },
+      {
+        "text": "ธุรกิจขนาดใหญ่ไม่เอาเปรียบธุรกิจขนาดเล็ก",
+        "isCorrect": false
+      },
+      {
+        "text": "ต้องเปิดเผยข้อมูลอย่างตรงไปตรงมา",
+        "isCorrect": false
+      },
+      {
+        "text": "ยึดหลักปองตองไม่เลือกปฏิบัติ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 32,
+    "question": "ข้อใดเป็นกลยุทธ์ด้านผลิตภัณฑ์",
+    "rawQuestion": "ข้อใดเป็นกลยุทธ์ด้านผลิตภัณฑ์ *",
+    "choices": [
+      {
+        "text": "การสร้างตราสินค้า",
+        "isCorrect": true
+      },
+      {
+        "text": "การจัดซุ้มขายสินค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "การตั้งราคาขายต่ำ",
+        "isCorrect": false
+      },
+      {
+        "text": "การโฆษณา",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 33,
+    "question": "ข้อใดเป็นจุดแข็งของกิจการ",
+    "rawQuestion": "ข้อใดเป็นจุดแข็งของกิจการ *",
+    "choices": [
+      {
+        "text": "สินค้ามีลักษณะคล้ายคู่แข่งขัน",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้ามีทัศนคติที่ดีต่อสินค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "ราคาสินค้าถูกและวัตถุดิบหาง่าย",
+        "isCorrect": true
+      },
+      {
+        "text": "รัฐบาลให้การสนับสนุน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 34,
+    "question": "ผู้ใช้ประโยชน์จากแผนธุรกิจแบ่งเป็น 2 ส่วนคือ",
+    "rawQuestion": "ผู้ใช้ประโยชน์จากแผนธุรกิจแบ่งเป็น 2 ส่วนคือ *",
+    "choices": [
+      {
+        "text": "บุคคลภายใน ลูกค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ประกอบการ ลูกค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "บุคคลภายใน บุคคลภายนอก",
+        "isCorrect": true
+      },
+      {
+        "text": "บุคคลภายนอก ลูกค้า",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 35,
+    "question": "ผลดีของการลงทุนจากต่างประเทศคือข้อใด",
+    "rawQuestion": "ผลดีของการลงทุนจากต่างประเทศคือข้อใด *",
+    "choices": [
+      {
+        "text": "เกิดกรณีพิพาทระหว่างประเทศที่ได้รับการลงทุนกับประเทศที่ลงทุน",
+        "isCorrect": false
+      },
+      {
+        "text": "เกิดการพัฒนาเศรษฐกิจ โดยอาศัยเงินลงทุนและเทคโนโลยีจากต่างประเทศ",
+        "isCorrect": true
+      },
+      {
+        "text": "ทรัพยากรธรรมชาติถูกนำมาใช้ เพื่อประโยชน์ในการลงทุนของต่างประเทศอย่างไม่เหมาะสม",
+        "isCorrect": false
+      },
+      {
+        "text": "สภาวะแวดล้อมของประเทศที่เป็นแหล่งลงทุนถูกทำลาย",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 36,
+    "question": "ข้อใดเป็นอรรถประโยชน์ด้านสถานที่ (Place Utility)",
+    "rawQuestion": "ข้อใดเป็นอรรถประโยชน์ด้านสถานที่ (Place Utility)*",
+    "choices": [
+      {
+        "text": "ผู้บริโภคหาซื้อทูเรียนใน Top Super Market ได้ ไม่ต้องไปถึงจังหวัดระยอง",
+        "isCorrect": true
+      },
+      {
+        "text": "ร้านค้า 7-11 เปิดตลอด 24 ชั่วโมง",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้าสามารถเลือกซื้อผลิตภัณฑ์ตามราคาที่ต้องการ โดยมีหลายระดับราคาเพื่อสนองความต้องการของผู้ซื้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้าซื้อเบอร์โทรศัพท์หมายเลขตองที่ศูนย์ DTAC",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 37,
+    "question": "ข้อใดต่อไปนี้คือเหตุผลในการเขียนแผนธุรกิจ",
+    "rawQuestion": "ข้อใดต่อไปนี้คือเหตุผลในการเขียนแผนธุรกิจ*",
+    "choices": [
+      {
+        "text": "ช่วยให้เราเห็นแผนการของคู่แข่งขันทางธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "ช่วยให้เราเข้าใจสิ่งที่จะทำได้ชัดเจน",
+        "isCorrect": true
+      },
+      {
+        "text": "ช่วยให้คู่แข่งขันเราเข้าใจแนวการแข่งขันของเรา",
+        "isCorrect": false
+      },
+      {
+        "text": "ช่วยให้เราทำอะไรก็ได้ในธุรกิจของเรา",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 38,
+    "question": "ข้อใดไม่ใช่หน้าที่ของหน่วยรัฐบาลคือ",
+    "rawQuestion": "ข้อใดไม่ใช่หน้าที่ของหน่วยรัฐบาลคือ *",
+    "choices": [
+      {
+        "text": "รักษาความสงบเรียบร้อยของบ้านเมือง",
+        "isCorrect": false
+      },
+      {
+        "text": "อำนวยความสะดวก ในด้านปัจจัยพื้นฐาน",
+        "isCorrect": false
+      },
+      {
+        "text": "สร้างผลกำไรให้กับหน่วยงานธุรกิจที่รัฐบาลเป็นเจ้าของ",
+        "isCorrect": true
+      },
+      {
+        "text": "จัดหารายได้โดยการเก็บภาษี",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 39,
+    "question": "\"ธุรกิจเป็นแหล่งเพิ่มรายได้ให้แก่รัฐบาล” จากข้อความดังกล่าวหมายถึงข้อใด",
+    "rawQuestion": "\"ธุรกิจเป็นแหล่งเพิ่มรายได้ให้แก่รัฐบาล” จากข้อความดังกล่าวหมายถึงข้อใด *",
+    "choices": [
+      {
+        "text": "ธุรกิจจำหน่ายสินค้าหรือบริการให้แก่รัฐบาล",
+        "isCorrect": false
+      },
+      {
+        "text": "ธุรกิจเสียภาษีให้กับรัฐบาลจากผลกำไรที่ได้รับจากการประกอบธุรกิจ",
+        "isCorrect": true
+      },
+      {
+        "text": "ธุรกิจนำกำไรที่ได้รับจากการประกอบธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "ธุรกิจทำให้มีการซื้อขายและทำให้รายได้ของรัฐบาลเพิ่มขึ้น",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 40,
+    "question": "จากคลิปวิดีโอ \"จากเด็กวัดสู่นักธุรกิจคอมพิวเตอร์ JIB ” ที่เปิดให้ชมในชั้นเรียนคุณสมยศ เชาวลิต ลาออกจากงานประจำมาเปิดร้านจำหน่ายร้านแรกที่ใด",
+    "rawQuestion": "จากคลิปวิดีโอ \"จากเด็กวัดสู่นักธุรกิจคอมพิวเตอร์ JIB ” ที่เปิดให้ชมในชั้นเรียนคุณสมยศ เชาวลิต ลาออกจากงานประจำมาเปิดร้านจำหน่ายร้านแรกที่ใด *",
+    "choices": [
+      {
+        "text": "ศูนย์การค้าไอคอนสยาม",
+        "isCorrect": false
+      },
+      {
+        "text": "ศูนย์การค้าไอทีเซียร์รังสิต",
+        "isCorrect": true
+      },
+      {
+        "text": "ศูนย์การค้าไอทีมอลล์ฟอร์จูน",
+        "isCorrect": false
+      },
+      {
+        "text": "ศูนย์การค้าไอทีแสควร์หลักสี่",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 41,
+    "question": "หน่วยงานใดเป็นหน่วยงานหลักในการส่งเสริมธุรกิจ SMEs",
+    "rawQuestion": "หน่วยงานใดเป็นหน่วยงานหลักในการส่งเสริมธุรกิจ SMEs *",
+    "choices": [
+      {
+        "text": "กรมพัฒนาธุรกิจการค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "สำนักงานปลัดกระทรวงพาณิชย์",
+        "isCorrect": false
+      },
+      {
+        "text": "สำนักงานส่งเสริมวิสาหกิจขนาดกลางและขนาดย่อม",
+        "isCorrect": true
+      },
+      {
+        "text": "สำนักงานปลัดกระทรวงเกษตรและสหกรณ์",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 42,
+    "question": "ความสามารถในการซื้อของเงิน 1 บาท ขึ้นอยู่กับปัจจัยใด",
+    "rawQuestion": "ความสามารถในการซื้อของเงิน 1 บาท ขึ้นอยู่กับปัจจัยใด *",
+    "choices": [
+      {
+        "text": "ความผันผวนทางเศรษฐกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "มาตรการทางภาษี",
+        "isCorrect": false
+      },
+      {
+        "text": "ดัชนีราคาสินค้า",
+        "isCorrect": true
+      },
+      {
+        "text": "การกระตุ้นการบริโภคในประเทศ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 43,
+    "question": "ข้อใดต่อไปนี้เป็นแหล่งที่มาของรายได้ของครัวเรือน",
+    "rawQuestion": "ข้อใดต่อไปนี้เป็นแหล่งที่มาของรายได้ของครัวเรือน *",
+    "choices": [
+      {
+        "text": "รายได้จากที่ดินและทรัพยากรธรรมชาติอื่น ๆ",
+        "isCorrect": false
+      },
+      {
+        "text": "ถูกหมดทุกข้อ",
+        "isCorrect": true
+      },
+      {
+        "text": "รายได้จากแรงงาน",
+        "isCorrect": false
+      },
+      {
+        "text": "รายได้จากเงินโอน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 44,
+    "question": "หากปริมาณเงินหมุนเวียนในระบบเศรษฐกิจมีน้อยกว่าจำนวนสินค้าและบริการที่มีอยู่ในขณะนั้น จะเกิดอะไรขึ้น",
+    "rawQuestion": "หากปริมาณเงินหมุนเวียนในระบบเศรษฐกิจมีน้อยกว่าจำนวนสินค้าและบริการที่มีอยู่ในขณะนั้น จะเกิดอะไรขึ้น *",
+    "choices": [
+      {
+        "text": "ภาวะเงินตึง",
+        "isCorrect": false
+      },
+      {
+        "text": "ภาวะเงินเฟ้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "สินค้าขาดตลาด",
+        "isCorrect": false
+      },
+      {
+        "text": "ภาวะเงินฝืด",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 45,
+    "question": "นายทักษิณ เป็นเกษตรกรยากจน ต่อมาสร้างฐานะจนได้เป็นเจ้าของโรงสีข้าว แสดงว่านายทักษิณใช้คุณธรรมด้านใดมากที่สุด",
+    "rawQuestion": "นายทักษิณ เป็นเกษตรกรยากจน ต่อมาสร้างฐานะจนได้เป็นเจ้าของโรงสีข้าว แสดงว่านายทักษิณใช้คุณธรรมด้านใดมากที่สุด *",
+    "choices": [
+      {
+        "text": "ขยันอดทน",
+        "isCorrect": true
+      },
+      {
+        "text": "มีความซื่อสัตย์",
+        "isCorrect": false
+      },
+      {
+        "text": "มีวินัย",
+        "isCorrect": false
+      },
+      {
+        "text": "ประหยัด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 46,
+    "question": "ผลิตผลทางการเกษตรควรกำหนดกลยุทธ์ทางการตลาดข้อใด ด้านผลิตภัณฑ์ด้านราคาด้านช่องทางการจัดจำหน่ายด้านการส่งเสริมการตลาด",
+    "rawQuestion": "ผลิตผลทางการเกษตรควรกำหนดกลยุทธ์ทางการตลาดข้อใด ด้านผลิตภัณฑ์ด้านราคาด้านช่องทางการจัดจำหน่ายด้านการส่งเสริมการตลาด *",
+    "choices": [
+      {
+        "text": "ผลิตผลทางการเกษตรควรกำหนดกลยุทธ์ทางการตลาดข้อใด",
+        "isCorrect": false
+      },
+      {
+        "text": "ด้านการส่งเสริมการตลาด",
+        "isCorrect": false
+      },
+      {
+        "text": "ด้านผลิตภัณฑ์",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 47,
+    "question": "การให้บริการโทรศัพท์เคลื่อนที่รุ่นใหม่ ดูทีวีได้ หรือ Chat กับเพื่อนได้ตลอดเวลา เป็นนวัตกรรมประเภทใด",
+    "rawQuestion": "การให้บริการโทรศัพท์เคลื่อนที่รุ่นใหม่ ดูทีวีได้ หรือ Chat กับเพื่อนได้ตลอดเวลา เป็นนวัตกรรมประเภทใด *",
+    "choices": [
+      {
+        "text": "นวัตกรรมทางธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "นวัตกรรมในขบวนการผลิตหรือการดำเนินงาน",
+        "isCorrect": false
+      },
+      {
+        "text": "นวัตกรรมด้านบริการ",
+        "isCorrect": false
+      },
+      {
+        "text": "นวัตกรรมผลิตภัณฑ์",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 48,
+    "question": "ข้อความต่อไปนี้ข้อใดถูกต้องที่สุด ?",
+    "rawQuestion": "ข้อความต่อไปนี้ข้อใดถูกต้องที่สุด ?*",
+    "choices": [
+      {
+        "text": "ในองค์กรทุกองค์กรหน้าที่ในการจัดย่อมต้องสอดคล้องต่อเนื่องกันเป็นลำดับ โดยหน้าที่หนึ่งย่อมต้องเสร็จสิ้นก่อน อีกหน้าที่หนึ่งจึงจะเกิดขึ้นได้",
+        "isCorrect": false
+      },
+      {
+        "text": "หน้าที่ในการจัดการต้องประกอบด้วยการวางแผน",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้บริหารระดับสูงเท่านั้นที่มีหน้าที่ในการวางแผน เพราะหน้าที่ในเรื่องการวางแผน เป็นเรื่องเกี่ยวกับ กิจกรรมต่างๆ ที่ครอบคลุมกิจกรรมในองค์การอย่างกว้างขวาง",
+        "isCorrect": false
+      },
+      {
+        "text": "ในองค์กรทุกองค์กรหน้าที่ในการจัดย่อมสอดคล้องและต่อเนื่องกัน โดยไม่อาจจัดลำดับที่แน่นอนได้",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 49,
+    "question": "การที่ระดับราคาสินค้าลดลง จนโรงงานต้องหยุดการผลิต คนงานเริ่มว่างงานมากขึ้น สินค้าขาดตลาดเป็นภาวะที่เรียกว่า",
+    "rawQuestion": "การที่ระดับราคาสินค้าลดลง จนโรงงานต้องหยุดการผลิต คนงานเริ่มว่างงานมากขึ้น สินค้าขาดตลาดเป็นภาวะที่เรียกว่า *",
+    "choices": [
+      {
+        "text": "เงินเฟ้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "เศรษฐกิจฟื้นตัว",
+        "isCorrect": false
+      },
+      {
+        "text": "ภาวะเงินลอยตัว",
+        "isCorrect": false
+      },
+      {
+        "text": "เงินฝืด",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 50,
+    "question": "เป้าหมายของผู้จัดการทางการเงินคือ",
+    "rawQuestion": "เป้าหมายของผู้จัดการทางการเงินคือ *",
+    "choices": [
+      {
+        "text": "เพิ่มความมั่งคั่งสูงสุดแก่ผู้ถือหุ้น",
+        "isCorrect": true
+      },
+      {
+        "text": "เพิ่มอัตราเงินปันผล",
+        "isCorrect": false
+      },
+      {
+        "text": "เพิ่มผลกำไรสูงสุด",
+        "isCorrect": false
+      },
+      {
+        "text": "ลดอัตราการเกิดหนี้สงสัยจะสูญ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 51,
+    "question": "ดัชนีการพัฒนามนุษย์วัดความสำเร็จโดยเฉลี่ยของแต่ละประเทศในการพัฒนามนุษย์ได้หลายอย่าง ยกเว้น",
+    "rawQuestion": "ดัชนีการพัฒนามนุษย์วัดความสำเร็จโดยเฉลี่ยของแต่ละประเทศในการพัฒนามนุษย์ได้หลายอย่าง ยกเว้น *",
+    "choices": [
+      {
+        "text": "อายุขัย",
+        "isCorrect": false
+      },
+      {
+        "text": "ความสามารถด้านภาษาอังกฤษ",
+        "isCorrect": true
+      },
+      {
+        "text": "ความเท่าเทียมกันของอำนาจซื้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "อัตราการรู้หนังสือ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 52,
+    "question": "ข้อใดเป็นปัจจัยภายในกิจการ",
+    "rawQuestion": "ข้อใดเป็นปัจจัยภายในกิจการ *",
+    "choices": [
+      {
+        "text": "เศรษฐกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "การวิจัยและพัฒนาผลิตภัณฑ์",
+        "isCorrect": true
+      },
+      {
+        "text": "วัฒนธรรมประเพณี",
+        "isCorrect": false
+      },
+      {
+        "text": "กลุ่มเป้าหมาย",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 53,
+    "question": "นายบุญชู ทำการเกษตรแบบพอเพียงชี้ให้เห็นถึงความเป็นผู้มีคุณธรรมในด้านใดมากที่สุด",
+    "rawQuestion": "นายบุญชู ทำการเกษตรแบบพอเพียงชี้ให้เห็นถึงความเป็นผู้มีคุณธรรมในด้านใดมากที่สุด *",
+    "choices": [
+      {
+        "text": "การพึ่งตนเอง",
+        "isCorrect": true
+      },
+      {
+        "text": "การมีระเบียบวินัย",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความซื่อสัตย์",
+        "isCorrect": false
+      },
+      {
+        "text": "รู้จักประหยัด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 54,
+    "question": "การเปลี่ยนแปลงทางเศรษฐกิจที่มีการเคลื่อนไหวไปในทางที่สูงขึ้นหรือต่ำลง ในทางเศรษฐกิจเรา เรียกว่า",
+    "rawQuestion": "การเปลี่ยนแปลงทางเศรษฐกิจที่มีการเคลื่อนไหวไปในทางที่สูงขึ้นหรือต่ำลง ในทางเศรษฐกิจเรา เรียกว่า *",
+    "choices": [
+      {
+        "text": "วัฏจักรเศรษฐกิจ",
+        "isCorrect": true
+      },
+      {
+        "text": "กิจกรรมทางเศรษฐกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "เศรษฐกิจประเทศไทย",
+        "isCorrect": false
+      },
+      {
+        "text": "ความเคลื่อนไหวของเศรษฐกิจ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 55,
+    "question": "ข้อใดไม่ใช่คุณลักษณะที่จะทำให้ผู้ประกอบการประสบผลสำเร็จ",
+    "rawQuestion": "ข้อใดไม่ใช่คุณลักษณะที่จะทำให้ผู้ประกอบการประสบผลสำเร็จ *",
+    "choices": [
+      {
+        "text": "มีมนุษยสัมพันธ์",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความยุติธรรม ซื่อสัตย์",
+        "isCorrect": false
+      },
+      {
+        "text": "ต้องเห็นคุณค่าของเงินมากกว่าทุกสิ่งเสมอ",
+        "isCorrect": true
+      },
+      {
+        "text": "กล้าเสี่ยงอย่างมีเหตุผล",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 56,
+    "question": "ข้อใดคือสิ่งแรกที่ผู้ประกอบการควรมีก่อนลงมือทำธุรกิจ",
+    "rawQuestion": "ข้อใดคือสิ่งแรกที่ผู้ประกอบการควรมีก่อนลงมือทำธุรกิจ *",
+    "choices": [
+      {
+        "text": "แรงงาน",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ร่วมลงทุน",
+        "isCorrect": false
+      },
+      {
+        "text": "ที่ดิน",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความรู้และข้อมูลต่างๆเกี่ยวกับธุรกิจ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 57,
+    "question": "ข้อใดคือจรรยาบรรณต่อองค์กร",
+    "rawQuestion": "ข้อใดคือจรรยาบรรณต่อองค์กร *",
+    "choices": [
+      {
+        "text": "ไม่นำความลับของกิจการไปเปิดเผย",
+        "isCorrect": true
+      },
+      {
+        "text": "ไม่นำหีบห่อของกิจการอื่นมาใส่ผลิตภัณฑ์",
+        "isCorrect": false
+      },
+      {
+        "text": "ไม่ซื้อสินค้าของคู่แข่ง",
+        "isCorrect": false
+      },
+      {
+        "text": "ไม่นำผลิตภัณฑ์ของกิจการไปขาย",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 58,
+    "question": "รัฐบาลควรแก้ไขภาวะเงินเฟ้ออย่างไร",
+    "rawQuestion": "รัฐบาลควรแก้ไขภาวะเงินเฟ้ออย่างไร *",
+    "choices": [
+      {
+        "text": "ธนาคารกลางลดอัตราเงินสดสำรองแก่ธนาคารพาณิชย์",
+        "isCorrect": false
+      },
+      {
+        "text": "เพิ่มอัตราดอกเบี้ยเงินฝากให้สูงขึ้น",
+        "isCorrect": true
+      },
+      {
+        "text": "ธนาคารกลางพิมพ์ธนบัตรใช้หมุนเวียนเพิ่มขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "ควบคุมมีให้ธนาคารพาณิชย์ปล่อยสินเชื่อมากเกินไป",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 59,
+    "question": "ข้อใด ไม่ใช่ ปัจจัยที่มีผลต่อจรรยาบรรณของผู้ประกอบธุรกิจ",
+    "rawQuestion": "ข้อใด ไม่ใช่ ปัจจัยที่มีผลต่อจรรยาบรรณของผู้ประกอบธุรกิจ *",
+    "choices": [
+      {
+        "text": "การมอบหมายงานไม่เหมาะสม",
+        "isCorrect": false
+      },
+      {
+        "text": "ความไม่พอใจของพนักงาน",
+        "isCorrect": true
+      },
+      {
+        "text": "การขยายตัวของธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "บุคลิกภาพของผู้ประกอบธุรกิจ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 60,
+    "question": "การที่ ด.ญ.สมหญิง รู้จักใช้จ่ายเงินแสดงให้เห็นถึง ด.ญ.สมหญิง มีคุณธรรมในข้อใด",
+    "rawQuestion": "การที่ ด.ญ.สมหญิง รู้จักใช้จ่ายเงินแสดงให้เห็นถึง ด.ญ.สมหญิง มีคุณธรรมในข้อใด *",
+    "choices": [
+      {
+        "text": "ประหยัดอดออม",
+        "isCorrect": true
+      },
+      {
+        "text": "มีความซื่อสัตย์",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความรับผิดชอบ",
+        "isCorrect": false
+      },
+      {
+        "text": "มีระเบียบวินัย",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 61,
+    "question": "บทบาทของเทคโนโลยีสารสนเทศช่วยเพิ่มผลผลิตอย่างไร",
+    "rawQuestion": "บทบาทของเทคโนโลยีสารสนเทศช่วยเพิ่มผลผลิตอย่างไร *",
+    "choices": [
+      {
+        "text": "ใช้ความชำนาญ",
+        "isCorrect": false
+      },
+      {
+        "text": "ควบคุมธรรมาภิและตัวแปร",
+        "isCorrect": false
+      },
+      {
+        "text": "เพิ่มประสิทธิภาพการทำงาน",
+        "isCorrect": true
+      },
+      {
+        "text": "พึ่งพาธรรมชาติ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 62,
+    "question": "วัตถุประสงค์อันดับแรกของธุรกิจเพื่ออะไร",
+    "rawQuestion": "วัตถุประสงค์อันดับแรกของธุรกิจเพื่ออะไร *",
+    "choices": [
+      {
+        "text": "เพื่อความเจริญเติบโตของธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "เพื่อความมั่นคงของกิจการ",
+        "isCorrect": false
+      },
+      {
+        "text": "เพื่อผลประโยชน์หรือกำไรของธุรกิจ",
+        "isCorrect": true
+      },
+      {
+        "text": "เพื่อความรับผิดชอบต่อสังคม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 63,
+    "question": "ข้อใดเป็นปัจจัยสิ่งแวดล้อมภายในของบริษัทท่องเที่ยว",
+    "rawQuestion": "ข้อใดเป็นปัจจัยสิ่งแวดล้อมภายในของบริษัทท่องเที่ยว *",
+    "choices": [
+      {
+        "text": "พนักงาน",
+        "isCorrect": true
+      },
+      {
+        "text": "สภาวะเศรษฐกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "การเมือง",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้า",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 64,
+    "question": "การทำบัญชีครัวเรือนเกี่ยวข้องกับปรัชญาเศรษฐกิจพอเพียงอย่างไร",
+    "rawQuestion": "การทำบัญชีครัวเรือนเกี่ยวข้องกับปรัชญาเศรษฐกิจพอเพียงอย่างไร *",
+    "choices": [
+      {
+        "text": "เป็นเครื่องมืออย่างหนึ่งในปรัชญาเศรษฐกิจพอเพียง",
+        "isCorrect": true
+      },
+      {
+        "text": "เป็นผลของปรัชญาเศรษฐกิจพอเพียง",
+        "isCorrect": false
+      },
+      {
+        "text": "เป็นสาเหตุของปรัชญาเศรษฐกิจพอเพียง",
+        "isCorrect": false
+      },
+      {
+        "text": "เป็นองค์ประกอบอย่างหนึ่งของปรัชญาเศรษฐกิจพอเพียง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 65,
+    "question": "ผู้ประกอบการซึ่งถูกกำจัดการมีอำนาจโดยสัญญาทางการค้า เรียกว่าอะไร",
+    "rawQuestion": "ผู้ประกอบการซึ่งถูกกำจัดการมีอำนาจโดยสัญญาทางการค้า เรียกว่าอะไร *",
+    "choices": [
+      {
+        "text": "ผู้จัดการทั่วไป",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ก่อตั้ง",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ขอรับสิทธิทางการค้า",
+        "isCorrect": true
+      },
+      {
+        "text": "ผู้ประกอบการเสรี",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 66,
+    "question": "การแก้ปัญหาการขาดดุลการค้าระหว่างประเทศของไทยข้อใด ควรได้รับการพิจารณาน้อยที่สุด",
+    "rawQuestion": "การแก้ปัญหาการขาดดุลการค้าระหว่างประเทศของไทยข้อใด ควรได้รับการพิจารณาน้อยที่สุด *",
+    "choices": [
+      {
+        "text": "การใช้มาตรการกีดกันทางการค้า",
+        "isCorrect": true
+      },
+      {
+        "text": "ส่งออกสินค้าที่มีมาตรฐานสากลและมีความหลากหลายของผลิตภัณฑ์",
+        "isCorrect": false
+      },
+      {
+        "text": "การควบคุมการใช้จ่ายเงินของภาครัฐและเอกชน",
+        "isCorrect": false
+      },
+      {
+        "text": "การลดต้นทุนการผลิต เพื่อให้สินค้ามีราคาถูกลงในตลาดต่างประเทศ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 67,
+    "question": "งบการเงินประเภทใด แสดงให้ทราบว่ามีสินทรัพย์ หนี้สินและส่วนของเจ้าของ จำนวนเท่าใด",
+    "rawQuestion": "งบการเงินประเภทใด แสดงให้ทราบว่ามีสินทรัพย์ หนี้สินและส่วนของเจ้าของ จำนวนเท่าใด *",
+    "choices": [
+      {
+        "text": "งบดุล",
+        "isCorrect": true
+      },
+      {
+        "text": "งบทดลอง",
+        "isCorrect": false
+      },
+      {
+        "text": "งบกระแสเงินสด",
+        "isCorrect": false
+      },
+      {
+        "text": "งบกำไรขาดทุน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 68,
+    "question": "จากคลิปวีดีโอ\"จากวิศวกรนาซ่า สู่นักธุรกิจหมื่นล้าน\" ที่เปิดให้ชมในชั้นเรียนสินค้าในข้อใดที่คุณ อภิจิต เจริญเวชชการ ไม่ได้จัดจำหน่าย",
+    "rawQuestion": "จากคลิปวีดีโอ\"จากวิศวกรนาซ่า สู่นักธุรกิจหมื่นล้าน\" ที่เปิดให้ชมในชั้นเรียนสินค้าในข้อใดที่คุณ อภิจิต เจริญเวชชการ ไม่ได้จัดจำหน่าย *",
+    "choices": [
+      {
+        "text": "สินค้ากระเบื้องโมเสส",
+        "isCorrect": false
+      },
+      {
+        "text": "สินค้าปูนปั้นดินเผา",
+        "isCorrect": false
+      },
+      {
+        "text": "สินค้าเป่าลม",
+        "isCorrect": false
+      },
+      {
+        "text": "สินค้าตุ๊กตาผ้า",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 69,
+    "question": "ดัชนีการพัฒนามนุษยว์วัดความสำเร็จโดยเฉลี่ยของแต่ละประเทศในการพัฒนามนุษย์วัดได้หลายอย่าง ยกเว้น",
+    "rawQuestion": "ดัชนีการพัฒนามนุษยว์วัดความสำเร็จโดยเฉลี่ยของแต่ละประเทศในการพัฒนามนุษย์วัดได้หลายอย่าง ยกเว้น *",
+    "choices": [
+      {
+        "text": "อายุขัย",
+        "isCorrect": false
+      },
+      {
+        "text": "ความสามารถด้านภาษาอังกฤษ",
+        "isCorrect": true
+      },
+      {
+        "text": "ความเท่าเทียมกันของอำนาจซื้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "อัตราการรู้หนังสือ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 70,
+    "question": "ข้อใดเป็นปัจจัยภายในกิจการ",
+    "rawQuestion": "ข้อใดเป็นปัจจัยภายในกิจการ *",
+    "choices": [
+      {
+        "text": "เศรษฐกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "การวิจัยและพัฒนาผลิตภัณฑ์",
+        "isCorrect": true
+      },
+      {
+        "text": "วัฒนธรรมประเพณี",
+        "isCorrect": false
+      },
+      {
+        "text": "กลุ่มเป้าหมาย",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 71,
+    "question": "จากการที่การขนส่งทำให้เกิดต้นทุนค่าใช้จ่าย ผู้ผลิตควรจัดการตามข้อใด",
+    "rawQuestion": "จากการที่การขนส่งทำให้เกิดต้นทุนค่าใช้จ่าย ผู้ผลิตควรจัดการตามข้อใด *",
+    "choices": [
+      {
+        "text": "เลือกการขนส่งที่มีประสิทธิภาพ",
+        "isCorrect": true
+      },
+      {
+        "text": "ใช้การขนส่งให้น้อยที่สุด",
+        "isCorrect": false
+      },
+      {
+        "text": "ขายสินค้าใกล้กับแหล่งผลิต",
+        "isCorrect": false
+      },
+      {
+        "text": "ผลักภาระค่าขนส่งให้แก่ผู้ซื้อ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 72,
+    "question": "อะไรที่ไม่ใช่ปัจจัยที่กำหนดขนาดของรายได้ของแต่ละครัวเรือน",
+    "rawQuestion": "อะไรที่ไม่ใช่ปัจจัยที่กำหนดขนาดของรายได้ของแต่ละครัวเรือน *",
+    "choices": [
+      {
+        "text": "รายได้และประสบการณ์",
+        "isCorrect": false
+      },
+      {
+        "text": "รายได้และการศึกษา",
+        "isCorrect": false
+      },
+      {
+        "text": "รายได้และความขยันหมั่นเพียร",
+        "isCorrect": false
+      },
+      {
+        "text": "รายได้และความเข้มแข็งอดทน",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 73,
+    "question": "คนเลี้ยงหมูใส่สารเร่งเนื้อแดงเพื่อทำให้เนื้อมุมีสีน่ารับประทาน แสดงว่าผู้เลี้ยงหมูขาดคุณธรรม ในข้อใด",
+    "rawQuestion": "คนเลี้ยงหมูใส่สารเร่งเนื้อแดงเพื่อทำให้เนื้อมุมีสีน่ารับประทาน แสดงว่าผู้เลี้ยงหมูขาดคุณธรรม ในข้อใด *",
+    "choices": [
+      {
+        "text": "รู้จักประหยัดอดออม",
+        "isCorrect": false
+      },
+      {
+        "text": "ความมีระเบียบวินัย",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความขยัน อดทน",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความซื่อสัตย์",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 74,
+    "question": "กรณีของธุรกิจ \"สปา\" ที่ผลิตเครื่องสำอางโดยไม่ผ่านสำนักงานคณะกรรมการอาหารและยา (อย.) ถือว่าขาดคุณธรรมข้อใด",
+    "rawQuestion": "กรณีของธุรกิจ \"สปา\" ที่ผลิตเครื่องสำอางโดยไม่ผ่านสำนักงานคณะกรรมการอาหารและยา (อย.) ถือว่าขาดคุณธรรมข้อใด *",
+    "choices": [
+      {
+        "text": "มีความซื่อสัตย์",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความรับผิดชอบ",
+        "isCorrect": true
+      },
+      {
+        "text": "ความมีระเบียบวินัย",
+        "isCorrect": false
+      },
+      {
+        "text": "รู้จักประหยัด อดออม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 75,
+    "question": "การนำเนื้อหมูมาแปรรูปเป็นหมูหยอง กุนเชียง เป็นการสร้างอรรถประโยชน์ด้านใด",
+    "rawQuestion": "การนำเนื้อหมูมาแปรรูปเป็นหมูหยอง กุนเชียง เป็นการสร้างอรรถประโยชน์ด้านใด *",
+    "choices": [
+      {
+        "text": "ด้านสถานที่",
+        "isCorrect": false
+      },
+      {
+        "text": "ด้านความเป็นเจ้าของ",
+        "isCorrect": false
+      },
+      {
+        "text": "ด้านรูปร่าง",
+        "isCorrect": true
+      },
+      {
+        "text": "ด้านเวลา",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 76,
+    "question": "แนวคิดแบบใดมักจะใช้เครื่องมือทางการส่งเสริมการตลาด เพื่อกระตุ้นผู้บริโภคให้เกิดความสนใจ สินค้า",
+    "rawQuestion": "แนวคิดแบบใดมักจะใช้เครื่องมือทางการส่งเสริมการตลาด เพื่อกระตุ้นผู้บริโภคให้เกิดความสนใจ สินค้า *",
+    "choices": [
+      {
+        "text": "แนวความคิดมุ่งการตลาด",
+        "isCorrect": false
+      },
+      {
+        "text": "แนวความคิดการตลาดเพื่อสังคม",
+        "isCorrect": false
+      },
+      {
+        "text": "แนวความคิดมุ่งผลิตภัณฑ์",
+        "isCorrect": false
+      },
+      {
+        "text": "แนวความคิดมุ่งการขาย",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 77,
+    "question": "นายโอห์มฝากเงิน 15,000 บาทไว้กับธนาคาร โอห์มจะมีเงินเท่าไรเมื่อสิ้นปีที่ 10 สมมติให้ธนาคาร ให้อัตราดอกเบี้ยร้อยละ 2 ต่อปีทบต้นทุกปี",
+    "rawQuestion": "นายโอห์มฝากเงิน 15,000 บาทไว้กับธนาคาร โอห์มจะมีเงินเท่าไรเมื่อสิ้นปีที่ 10 สมมติให้ธนาคาร ให้อัตราดอกเบี้ยร้อยละ 2 ต่อปีทบต้นทุกปี *",
+    "choices": [
+      {
+        "text": "18,284.92 บาท",
+        "isCorrect": true
+      },
+      {
+        "text": "19,284.92 บาท",
+        "isCorrect": false
+      },
+      {
+        "text": "17,284.92 บาท",
+        "isCorrect": false
+      },
+      {
+        "text": "20,284.92 บาท",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 78,
+    "question": "ประเทศไทยที่มีเศรษฐกิจรายได้ชั้นกลาง กำลังเผชิญปัญหาสำคัญต่าง ๆ ในการขยับเป็นประเทศที่มีเศรษฐกิจรายได้ขั้นสูง ยกเว้น",
+    "rawQuestion": "ประเทศไทยที่มีเศรษฐกิจรายได้ชั้นกลาง กำลังเผชิญปัญหาสำคัญต่าง ๆ ในการขยับเป็นประเทศที่มีเศรษฐกิจรายได้ขั้นสูง ยกเว้น *",
+    "choices": [
+      {
+        "text": "โอกาสทางเศรษฐกิจที่แตกต่างกันระหว่างคนรวยกับคนจน",
+        "isCorrect": false
+      },
+      {
+        "text": "ความเสื่อมโทรมของทรัพยากรธรรมชาติและสิ่งแวดล้อม",
+        "isCorrect": false
+      },
+      {
+        "text": "อัตราการเติบโตทางเศรษฐกิจไม่อาจขยายตัวสูงได้อย่างต่อเนื่อง",
+        "isCorrect": false
+      },
+      {
+        "text": "สถิติวัยรุ่นท้องก่อนวัยอันควรเพิ่มสูงขึ้น",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 79,
+    "question": "เป้าหมายของการดำเนินงานทางธุรกิจคือข้อใด",
+    "rawQuestion": "เป้าหมายของการดำเนินงานทางธุรกิจคือข้อใด *",
+    "choices": [
+      {
+        "text": "เพิ่มช่องว่างให้เกิดขึ้นทางสังคม",
+        "isCorrect": false
+      },
+      {
+        "text": "เป็นหลักประกันทางเศรษฐกิจ",
+        "isCorrect": true
+      },
+      {
+        "text": "สร้างค่านิยมใหม่ให้เกิดขึ้นในสังคม",
+        "isCorrect": false
+      },
+      {
+        "text": "สร้างความเจริญก้าวหน้าในสังคม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 80,
+    "question": "ในขณะที่ภาวะเศรษฐกิจรุ่งเรือง อำนาจการซื้อของประชาชนจะเป็นอย่างไร",
+    "rawQuestion": "ในขณะที่ภาวะเศรษฐกิจรุ่งเรือง อำนาจการซื้อของประชาชนจะเป็นอย่างไร *",
+    "choices": [
+      {
+        "text": "ค่อยๆ ลดลงแล้วสูงขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "สูงขึ้น",
+        "isCorrect": true
+      },
+      {
+        "text": "คงเดิม",
+        "isCorrect": false
+      },
+      {
+        "text": "ลดลง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 81,
+    "question": "ขายอะไรดีช่วงโควิด เมื่อวิกฤตนี้ยังอยู่กับเราอีกนาน(ที่มา scbTV)",
+    "rawQuestion": "ขายอะไรดีช่วงโควิด เมื่อวิกฤตนี้ยังอยู่กับเราอีกนาน(ที่มา scbTV)",
+    "choices": [
+      {
+        "text": "อุปกรณ์อิเล็กทรอนิกส์ สินค้า IT",
+        "isCorrect": false
+      },
+      {
+        "text": "อุปกรณ์ทำอาหาร เครื่องครัว",
+        "isCorrect": false
+      },
+      {
+        "text": "ของกิน อาหาร เครื่องดื่ม",
+        "isCorrect": true
+      },
+      {
+        "text": "อุปกรณ์ป้องกันโควิด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 82,
+    "question": "ข้อใดไม่ใช่ประโยชน์ในการประกอบธุรกิจ",
+    "rawQuestion": "ข้อใดไม่ใช่ประโยชน์ในการประกอบธุรกิจ *",
+    "choices": [
+      {
+        "text": "ช่วยพัฒนาเศรษฐกิจของประเทศ",
+        "isCorrect": false
+      },
+      {
+        "text": "เป็นแหล่งเพิ่มรายได้ให้แก่รัฐบาล",
+        "isCorrect": false
+      },
+      {
+        "text": "กระจายสินค้าไปสู่ผู้บริโภค",
+        "isCorrect": false
+      },
+      {
+        "text": "เป็นแหล่งส่งออกของประเทศ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 83,
+    "question": "ข้อใดเป็นจรรยาบรรณที่องค์กรควรมีต่อลูกค้า",
+    "rawQuestion": "ข้อใดเป็นจรรยาบรรณที่องค์กรควรมีต่อลูกค้า *",
+    "choices": [
+      {
+        "text": "ให้ความสำคัญกับลูกค้าขาประจำมากที่สุด",
+        "isCorrect": false
+      },
+      {
+        "text": "ปล่อยข่าวลือเรื่องน้ำมันจะขึ้นราคา",
+        "isCorrect": false
+      },
+      {
+        "text": "ส่งมอบสินค้าให้ลูกค้าโดยมีปริมาณครบถ้วน",
+        "isCorrect": true
+      },
+      {
+        "text": "ลดราคาสินค้าให้มากที่สุด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 84,
+    "question": "ข้อใดเป็นอุปสรรคของกิจการ",
+    "rawQuestion": "ข้อใดเป็นอุปสรรคของกิจการ *",
+    "choices": [
+      {
+        "text": "ตรา ยี่ห้อ ยังไม่เป็นที่รู้จัก",
+        "isCorrect": false
+      },
+      {
+        "text": "ราคาสินค้าแพงกว่าคู่แข่ง",
+        "isCorrect": false
+      },
+      {
+        "text": "การโฆษณายังมีน้อย",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้านิยมซื้อสินค้าในห้างสรรพสินค้า",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 85,
+    "question": "ภาวะเศรษฐกิจรุ่งเรือง จะมีผลต่อธุรกิจการค้าอย่างไรบ้าง",
+    "rawQuestion": "ภาวะเศรษฐกิจรุ่งเรือง จะมีผลต่อธุรกิจการค้าอย่างไรบ้าง *",
+    "choices": [
+      {
+        "text": "ประชาชนมีอำนาจซื้อสูง",
+        "isCorrect": true
+      },
+      {
+        "text": "การลงทุนน้อย",
+        "isCorrect": false
+      },
+      {
+        "text": "อัตราดอกเบี้ยลดลง",
+        "isCorrect": false
+      },
+      {
+        "text": "ราคาสินค้าลดลง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 86,
+    "question": "รายได้ที่สามารถใช้จ่ายได้จริง (Disposable income) หมายถึง",
+    "rawQuestion": "รายได้ที่สามารถใช้จ่ายได้จริง (Disposable income) หมายถึง *",
+    "choices": [
+      {
+        "text": "รายได้จากเงินปันผล",
+        "isCorrect": false
+      },
+      {
+        "text": "รายได้หลังจากหักภาษีเงินได้บุคคลธรรมดา",
+        "isCorrect": true
+      },
+      {
+        "text": "รายได้หลังจากหักค่าใช้จ่าย",
+        "isCorrect": false
+      },
+      {
+        "text": "รายได้หลังจากหักเงินเฟ้อ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 87,
+    "question": "วัฏจักรเศรษฐกิจระยะใดที่ทำให้ผู้ผลิตเริ่มไม่มั่นใจในอนาคต ผลผลิตเริ่มลดลง การจ้างงานลดลง",
+    "rawQuestion": "วัฏจักรเศรษฐกิจระยะใดที่ทำให้ผู้ผลิตเริ่มไม่มั่นใจในอนาคต ผลผลิตเริ่มลดลง การจ้างงานลดลง *",
+    "choices": [
+      {
+        "text": "ระยะเวลาเศรษฐกิจรุ่งเรือง",
+        "isCorrect": false
+      },
+      {
+        "text": "ระยะเวลาเศรษฐกิจถดถอย",
+        "isCorrect": true
+      },
+      {
+        "text": "ระยะเวลาเศรษฐกิจตกต่ำ",
+        "isCorrect": false
+      },
+      {
+        "text": "ระยะเวลาเศรษฐกิฟื้นตัว",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 88,
+    "question": "ข้อใดไม่ใช่ข้อเสียเปรียบในการใช้กลยุทธ์การส่งออก",
+    "rawQuestion": "ข้อใดไม่ใช่ข้อเสียเปรียบในการใช้กลยุทธ์การส่งออก *",
+    "choices": [
+      {
+        "text": "ต้องการปรับปรุงผลิตภัณฑ์หรือบรรจุภัณฑ์",
+        "isCorrect": false
+      },
+      {
+        "text": "กิจการมีส่วนแบ่งในตลาดโลก",
+        "isCorrect": true
+      },
+      {
+        "text": "แบ่งปันเงินทุนและบุคคลากร",
+        "isCorrect": false
+      },
+      {
+        "text": "เพิ่มต้นทุนในการจัดการ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 89,
+    "question": "ข้อใดไม่ใช่ปัจจัยที่จะช่วยให้การลงทุนสำเร็จ",
+    "rawQuestion": "ข้อใดไม่ใช่ปัจจัยที่จะช่วยให้การลงทุนสำเร็จ *",
+    "choices": [
+      {
+        "text": "มีโอกาส จังหวะและเวลาที่เหมาะสม",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความพร้อมและศักยภาพด้านการบริหารธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "มีเพื่อนคู่คิดที่ดีและสามารถช่วยเหลือได้ตลอดเวลา",
+        "isCorrect": true
+      },
+      {
+        "text": "มีกลยุทธ์และวิธีการที่มีจุดเด่นเหนือคู่แข่ง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 90,
+    "question": "ทุกข้อเป็นผลจากการเปลี่ยนแปลงด้านระบบนิเวศและวัฒนธรรมที่เกิดขึ้นไปประเทศไทย ยกเว้น",
+    "rawQuestion": "ทุกข้อเป็นผลจากการเปลี่ยนแปลงด้านระบบนิเวศและวัฒนธรรมที่เกิดขึ้นไปประเทศไทย ยกเว้น",
+    "choices": [
+      {
+        "text": "สารเคมีตกค้าง ตินขาดความอุดมสมบูรณ์",
+        "isCorrect": false
+      },
+      {
+        "text": "คนไทยหนีภาคการเกษตร มุ่งหน้าหางานในโรงงาน",
+        "isCorrect": false
+      },
+      {
+        "text": "คุณค่าของเงินลดลง เนื่องจากการใช้เกษตรทฤษฎีใหม่ตามแนวพระราชดำริ",
+        "isCorrect": true
+      },
+      {
+        "text": "ความเสี่ยงด้านสุขภาพเพิ่มขึ้นจากการใช้สารกำจัดศัตรูพืช",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 91,
+    "question": "ข้อดีของบริษัทจำกัดคือข้อใด",
+    "rawQuestion": "ข้อดีของบริษัทจำกัดคือข้อใด",
+    "choices": [
+      {
+        "text": "มีผู้มีความรู้ความสามารถที่หลากหลายในองค์กร",
+        "isCorrect": false
+      },
+      {
+        "text": "ตัดสินใจได้อย่างอิสระ",
+        "isCorrect": false
+      },
+      {
+        "text": "มีความคล่องตัวในการปฏิบัติงาน",
+        "isCorrect": false
+      },
+      {
+        "text": "สามารถขยายตลาดของธุรกิจได้กว้างและรวดเร็ว",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 92,
+    "question": "เหตุใดจึงมีการแบ่งงานกันทำในองค์การ?",
+    "rawQuestion": "เหตุใดจึงมีการแบ่งงานกันทำในองค์การ?",
+    "choices": [
+      {
+        "text": "คนๆเดียวไม่สามารถทำงานทุกอย่างได้พร้อมๆกัน",
+        "isCorrect": false
+      },
+      {
+        "text": "คนมีความถนัดในการทำงานแต่ละอย่างไม่เหมือนกัน",
+        "isCorrect": false
+      },
+      {
+        "text": "ถูกทุกข้อ",
+        "isCorrect": true
+      },
+      {
+        "text": "การแบ่งงานกันทำช่วยให้เกิดประสิทธิภาพคือประหยัด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 93,
+    "question": "ความหมายของผู้ประกอบการข้อใดกล่าวถูกต้อง",
+    "rawQuestion": "ความหมายของผู้ประกอบการข้อใดกล่าวถูกต้อง",
+    "choices": [
+      {
+        "text": "ผู้ที่มีความคิดที่จะดำเนินธุรกิจโดยการก่อตั้งธุรกิจขึ้นมา",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ที่จัดตั้งองค์กรธุรกิจ โดยยอมรับความเสี่ยงเพื่อหวังผลกำไร",
+        "isCorrect": true
+      },
+      {
+        "text": "ผู้ที่จัดตั้งองค์การเพื่อดำเนินการผลิต การจำหน่าย การให้บริการ โดยนำปัจจัยต่างๆ มาลงทุน",
+        "isCorrect": false
+      },
+      {
+        "text": "กลุ่มบุคคลหรือนิติบุคคลร่วมมือกันทำงานในการผลิต",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 94,
+    "question": "ปัจจุบันสรรพสินค้าในกรุงเทพมหานครหลายแห่ง ใช้กลยุทธ์ใดในการต่อสู้กับคู่แข่งขันเพื่อทำให้ปริมาณยอดขายสูงขึ้นมากว่าปกติ",
+    "rawQuestion": "ปัจจุบันสรรพสินค้าในกรุงเทพมหานครหลายแห่ง ใช้กลยุทธ์ใดในการต่อสู้กับคู่แข่งขันเพื่อทำให้ปริมาณยอดขายสูงขึ้นมากว่าปกติ *",
+    "choices": [
+      {
+        "text": "ให้บริการที่ดี",
+        "isCorrect": false
+      },
+      {
+        "text": "ลดราคาสินค้าลง",
+        "isCorrect": true
+      },
+      {
+        "text": "เลือกทำเลที่ตั้งที่เหมาะสม",
+        "isCorrect": false
+      },
+      {
+        "text": "ขายสินค้ามีคุณภาพสูง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 95,
+    "question": "ข้อใดไม่ใช่หลุมพลางที่ต้องหลีกเลี่ยงในการจัดทำแผนธุรกิจ",
+    "rawQuestion": "ข้อใดไม่ใช่หลุมพลางที่ต้องหลีกเลี่ยงในการจัดทำแผนธุรกิจ",
+    "choices": [
+      {
+        "text": "เป้าหมายไม่สมจริง",
+        "isCorrect": false
+      },
+      {
+        "text": "การไม่มีตลาดเป้าหมาย",
+        "isCorrect": false
+      },
+      {
+        "text": "การได้เห็นมุมมองภาพรวมของธุรกิจในอุตสาหกรรมที่ลงทุน",
+        "isCorrect": true
+      },
+      {
+        "text": "ขาดประสบการณ์ทางธุรกิจ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 96,
+    "question": "ภาวะเงินเฟ้อก่อให้เกิดผลกระทบตามข้อใด",
+    "rawQuestion": "ภาวะเงินเฟ้อก่อให้เกิดผลกระทบตามข้อใด",
+    "choices": [
+      {
+        "text": "ลูกหนี้ได้เปรียบ เจ้าหนี้เสียเปรียบ",
+        "isCorrect": true
+      },
+      {
+        "text": "ลูกหนี้เสียเปรียบ เจ้าหนี้ได้เปรียบ",
+        "isCorrect": false
+      },
+      {
+        "text": "รัฐมีรายได้น้อยลง",
+        "isCorrect": false
+      },
+      {
+        "text": "อำนาจซื้อของผู้มีรายได้ประจำสูงขึ้น",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 97,
+    "question": "จากคลิปวีดีโอ\"จากเด็กวัดสู่นักธุรกิจคอมพิวเตอร์ JIB \" ที่เปิดให้ชมในชั้นเรียนคุณสมยศ เชาวลิต ได้รับเงินทุนจากการลาออกหรือ provident fund เป็นจำนวนเงินเท่าไหร่สำหรับการออกมาสร้าง ธุรกิจ",
+    "rawQuestion": "จากคลิปวีดีโอ\"จากเด็กวัดสู่นักธุรกิจคอมพิวเตอร์ JIB \" ที่เปิดให้ชมในชั้นเรียนคุณสมยศ เชาวลิต ได้รับเงินทุนจากการลาออกหรือ provident fund เป็นจำนวนเงินเท่าไหร่สำหรับการออกมาสร้าง ธุรกิจ *",
+    "choices": [
+      {
+        "text": "ประมาณ 1 แสนบาท",
+        "isCorrect": false
+      },
+      {
+        "text": "ประมาณ 3 แสนบาท",
+        "isCorrect": false
+      },
+      {
+        "text": "ประมาณ 4 แสนบาท",
+        "isCorrect": false
+      },
+      {
+        "text": "ประมาณ 2 แสนบาท",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 98,
+    "question": "ข้อใด ไม่ใช่ ปัญหาด้านธรรมาภิบาลของไทย",
+    "rawQuestion": "ข้อใด ไม่ใช่ ปัญหาด้านธรรมาภิบาลของไทย *",
+    "choices": [
+      {
+        "text": "ประชาชนได้รับข้อมูลข่าวสารเกี่ยวกับสถานการณ์บ้านเมือง แต่เพิกเฉยในการมีส่วนร่วมทางการเมือง",
+        "isCorrect": true
+      },
+      {
+        "text": "ความเหลื่อมล้ำระหว่างระหว่างผู้มีทุนกับผู้ต้อยโอกาส",
+        "isCorrect": false
+      },
+      {
+        "text": "รัฐมนตรีบางคนยังหมกมุ่นอยู่กับการหาโครงการที่จะนำผลประโยชน์มาให้ตนเอง",
+        "isCorrect": false
+      },
+      {
+        "text": "ความอ่อนด้อยและถดถอยของกลุ่มข้าราชการ นักวิชาการ ในการเสนอแนะนโยบายที่จำเป็นใน การบริหารประเทศ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 99,
+    "question": "วินัยกู้เงินจากธนาคาร 90,000 บาท ธนาคารคิดดอกเบี้ย 7% ต่อปี วินัยจ่ายดอกเบี้ยให้ธนาคาร ทุกเดือน และจ่ายเงินกู้(เงินต้น)คืนเมื่อครบสัญญา วินัยจ่ายดอกเบี้ยทั้งหมด 4,200 บาท ถามว่า วินัยทำสัญญากู้เงินจากธนาคารกี่เดือน",
+    "rawQuestion": "วินัยกู้เงินจากธนาคาร 90,000 บาท ธนาคารคิดดอกเบี้ย 7% ต่อปี วินัยจ่ายดอกเบี้ยให้ธนาคาร ทุกเดือน และจ่ายเงินกู้(เงินต้น)คืนเมื่อครบสัญญา วินัยจ่ายดอกเบี้ยทั้งหมด 4,200 บาท ถามว่า วินัยทำสัญญากู้เงินจากธนาคารกี่เดือน *",
+    "choices": [
+      {
+        "text": "7 เดือน",
+        "isCorrect": false
+      },
+      {
+        "text": "10 เดือน",
+        "isCorrect": false
+      },
+      {
+        "text": "9 เดือน",
+        "isCorrect": false
+      },
+      {
+        "text": "8 เดือน",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 100,
+    "question": "ข้อใดต่อไปนี้ไม่ใช่องค์ประกอบที่ทำให้ผู้ประกอบการประสบความสำเร็จ",
+    "rawQuestion": "ข้อใดต่อไปนี้ไม่ใช่องค์ประกอบที่ทำให้ผู้ประกอบการประสบความสำเร็จ *",
+    "choices": [
+      {
+        "text": "การควบคุมการเงินที่ดีและแน่นอน",
+        "isCorrect": false
+      },
+      {
+        "text": "การมีเทคโนโลยีที่ก้าวล้ำหน้ากว่าคู่แข่ง",
+        "isCorrect": true
+      },
+      {
+        "text": "การสนับสนุนด้านการจัดการ",
+        "isCorrect": false
+      },
+      {
+        "text": "ความเชื่อมั่นในตนเอง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 101,
+    "question": "ปัจจัยในข้อใดที่ไม่สามารถกระตุ้นให้องค์กรธุรกิจเห็นความสำคัญของนวัตกรรมมากขึ้น",
+    "rawQuestion": "ปัจจัยในข้อใดที่ไม่สามารถกระตุ้นให้องค์กรธุรกิจเห็นความสำคัญของนวัตกรรมมากขึ้น *",
+    "choices": [
+      {
+        "text": "นวัตกรรมมีความซับซ้อนขึ้น",
+        "isCorrect": true
+      },
+      {
+        "text": "การเปลี่ยนแปลงในอุตสาหกรรมที่รวดเร็วขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "ลูกค้ามีความคาดหวังที่สูงขึ้น",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 102,
+    "question": "ภาวะเงินฝืด มีผลตีต่อบุคคลกลุ่มใด",
+    "rawQuestion": "ภาวะเงินฝืด มีผลตีต่อบุคคลกลุ่มใด *",
+    "choices": [
+      {
+        "text": "พ่อค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "ข้าราชการ",
+        "isCorrect": true
+      },
+      {
+        "text": "เกษตรกร",
+        "isCorrect": false
+      },
+      {
+        "text": "เจ้าของโรงงาน",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 103,
+    "question": "ข้อใดคือสภาวะของเงินเฟ้อ",
+    "rawQuestion": "ข้อใดคือสภาวะของเงินเฟ้อ *",
+    "choices": [
+      {
+        "text": "ทุกคนมีเงินใช้เหลือเฟือ",
+        "isCorrect": false
+      },
+      {
+        "text": "ภาวะที่ราคาสินค้าและบริการคงที่แน่นอน",
+        "isCorrect": false
+      },
+      {
+        "text": "สถานบริการมีรายได้ต่ำลง",
+        "isCorrect": false
+      },
+      {
+        "text": "สินค้าและบริการทั่วไปราคาสูงขึ้น",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 104,
+    "question": "เทคโนโลยีสารสนเทศมีความสำคัญอย่างไร",
+    "rawQuestion": "เทคโนโลยีสารสนเทศมีความสำคัญอย่างไร *",
+    "choices": [
+      {
+        "text": "เพิ่มภาวะความเสี่ยงภัย",
+        "isCorrect": false
+      },
+      {
+        "text": "ทำให้ระบบขนส่งเพิ่มมากขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "เพิ่มปริมาณคนทำงานมากขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "ช่วยการดำรงชีวิตสะดวกสบายขึ้น",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 105,
+    "question": "เพราะเหตุใดองค์กรจึงต้องมีการคัดเลือกบุคคลให้เหมาะสมกับงาน",
+    "rawQuestion": "เพราะเหตุใดองค์กรจึงต้องมีการคัดเลือกบุคคลให้เหมาะสมกับงาน *",
+    "choices": [
+      {
+        "text": "ภาวการณ์แข่งขันสูงขึ้น",
+        "isCorrect": false
+      },
+      {
+        "text": "ลดความขัดแย้งของคนในองค์กร",
+        "isCorrect": false
+      },
+      {
+        "text": "บุคคลมีจำนวนมาก",
+        "isCorrect": false
+      },
+      {
+        "text": "ธรรมชาติความแตกต่างกันของมนุษย์",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 106,
+    "question": "ผู้ใด ไม่ใช่ คนจน",
+    "rawQuestion": "ผู้ใด ไม่ใช่ คนจน",
+    "choices": [
+      {
+        "text": "นายสามารถ ไม่มีสิทธิ์ในการเลือกตั้ง",
+        "isCorrect": false
+      },
+      {
+        "text": "นายกิตติศักดิ์  ไม่มีสิทธิ์รักษาพยาบาลในระบบประกันสุขภาพ",
+        "isCorrect": false
+      },
+      {
+        "text": "นายพลาวัสถ์ ได้รับค่าแรงวันละ 159 บาท",
+        "isCorrect": true
+      },
+      {
+        "text": "นายกฤษฎา ตกอยู่ในความเสี่ยง และความหวาดกลัวจากปัญหาผู้ก่อการร้ายในพื้นที่",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 107,
+    "question": "วิธีการออมแบบลบสิบ เป็นวิธีการออมที่นิยมใช้กันมาก มีวิธีการอย่างไร",
+    "rawQuestion": "วิธีการออมแบบลบสิบ เป็นวิธีการออมที่นิยมใช้กันมาก มีวิธีการอย่างไร",
+    "choices": [
+      {
+        "text": "หักเงินรายรับ 10% มาเป็นเงินออม",
+        "isCorrect": true
+      },
+      {
+        "text": "หักค่าใช้จ่าย 10% มาเป็นเงินออม",
+        "isCorrect": false
+      },
+      {
+        "text": "หักรายจ่าย 10% มาเป็นเงินออม",
+        "isCorrect": false
+      },
+      {
+        "text": "หักเงินเดือน 10% มาเป็นเงินออม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 108,
+    "question": "จ้อยเป็นหนี้บัตรเครดิต 20,000 บาท ธนาคารคิดดอกเบี้ย 24% ต่อปี ธนาคารทวงหนี้จ้อยทุกเดือน เป็นเวลา 3 เดือน เมื่อสิ้นเดือนที่ 3 จ้อยนำเงินไปชำระหนี้ เขาต้องจ่ายเงินทั้งหมดกี่บาท",
+    "rawQuestion": "จ้อยเป็นหนี้บัตรเครดิต 20,000 บาท ธนาคารคิดดอกเบี้ย 24% ต่อปี ธนาคารทวงหนี้จ้อยทุกเดือน เป็นเวลา 3 เดือน เมื่อสิ้นเดือนที่ 3 จ้อยนำเงินไปชำระหนี้ เขาต้องจ่ายเงินทั้งหมดกี่บาท",
+    "choices": [
+      {
+        "text": "20,224.16",
+        "isCorrect": false
+      },
+      {
+        "text": "21,224.16",
+        "isCorrect": true
+      },
+      {
+        "text": "19,224.16",
+        "isCorrect": false
+      },
+      {
+        "text": "18,224.16",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 109,
+    "question": "วัตถุประสงค์ของการเลือกทำเลที่ตั้งโดย ทั่ว ๆ ไป คืออะไร",
+    "rawQuestion": "วัตถุประสงค์ของการเลือกทำเลที่ตั้งโดย ทั่ว ๆ ไป คืออะไร",
+    "choices": [
+      {
+        "text": "กำไรรวมสูงสุด",
+        "isCorrect": true
+      },
+      {
+        "text": "ต้นทุนรวมต่ำสุด",
+        "isCorrect": false
+      },
+      {
+        "text": "ยอดขายสูงสุด",
+        "isCorrect": false
+      },
+      {
+        "text": "ใกล้แหล่งชุมชนให้มากที่สุด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 110,
+    "question": "บริษัทที่เติบโตสูง ประเภทที่มีขนาดเล็กประกอบไปด้วยข้อต่อไปนี้ ยกเว้นข้อใด",
+    "rawQuestion": "บริษัทที่เติบโตสูง ประเภทที่มีขนาดเล็กประกอบไปด้วยข้อต่อไปนี้ ยกเว้นข้อใด",
+    "choices": [
+      {
+        "text": "ธุรกิจไมโครซอฟต์",
+        "isCorrect": true
+      },
+      {
+        "text": "ธุรกิจร้านเสริมสวย",
+        "isCorrect": false
+      },
+      {
+        "text": "อู่ซ่อมรถ",
+        "isCorrect": false
+      },
+      {
+        "text": "ร้านซักรีด",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 111,
+    "question": "ปัญหาพื้นฐานทางเศรษฐกิจอันดับแรกของการดำเนินชีวิตทางเศรษฐกิจของประชาชนทุกสังคม คือข้อใด",
+    "rawQuestion": "ปัญหาพื้นฐานทางเศรษฐกิจอันดับแรกของการดำเนินชีวิตทางเศรษฐกิจของประชาชนทุกสังคม คือข้อใด",
+    "choices": [
+      {
+        "text": "ผลิตเมื่อใด",
+        "isCorrect": false
+      },
+      {
+        "text": "ผลิดอะไร",
+        "isCorrect": true
+      },
+      {
+        "text": "ผลิตอย่างไร",
+        "isCorrect": false
+      },
+      {
+        "text": "ผลิตจำนวนเท่าไหร่",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 112,
+    "question": "ข้อใดเป็นธุรกิจ SMEs",
+    "rawQuestion": "ข้อใดเป็นธุรกิจ SMEs",
+    "choices": [
+      {
+        "text": "ประณิชาเริ่มต้นธุรกิจด้วยเงินทุนมหาศาล",
+        "isCorrect": false
+      },
+      {
+        "text": "รุ่งแก้วดำเนินธุรกิจโดยการควบคุมของกฎหมาย",
+        "isCorrect": false
+      },
+      {
+        "text": "คมสันต์บริหารธุรกิจเพียงคนเดียว",
+        "isCorrect": true
+      },
+      {
+        "text": "ปิยะวัฒน์ดำเนินงานสอดคล้องกับวิถีชีวิตของตนเอง",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 113,
+    "question": "Nokia ย้ายฐานการผลิตไปที่จีน เป็นนวัตกรรมประเภทใด",
+    "rawQuestion": "Nokia ย้ายฐานการผลิตไปที่จีน เป็นนวัตกรรมประเภทใด",
+    "choices": [
+      {
+        "text": "นวัตกรรมทางธุรกิจ",
+        "isCorrect": false
+      },
+      {
+        "text": "นวัตกรรมในขบวนการผลิตหรือการดำเนินงาน",
+        "isCorrect": true
+      },
+      {
+        "text": "นวัตกรรมด้านบริการ",
+        "isCorrect": false
+      },
+      {
+        "text": "นวัตกรรมผลิตภัณฑ์",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 114,
+    "question": "ข้อใดไม่จัดว่าเป็นรายได้ที่ไม่เป็นตัวเงิน ได้แก่",
+    "rawQuestion": "ข้อใดไม่จัดว่าเป็นรายได้ที่ไม่เป็นตัวเงิน ได้แก่",
+    "choices": [
+      {
+        "text": "ค่าเช่าบ้านที่นายจ้างออกให้ เมื่อลูกจ้างทำงานในบริษัทสาขาต่างจังหวัด",
+        "isCorrect": false
+      },
+      {
+        "text": "การให้บริการแก่พนักงาน เช่น ค่ารักษาพยาบาล ค่าเล่าเรียนบุตร",
+        "isCorrect": false
+      },
+      {
+        "text": "อาหารกลางวันที่นายจ้างจัดไว้สำหรับคนงาน",
+        "isCorrect": false
+      },
+      {
+        "text": "เบี้ยขยันที่จ่ายให้สำหรับพนักงานที่ไม่เคยมาทำงานสาย",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 115,
+    "question": "ในวงจรเศรษฐกิจ ฝ่ายผลิตให้อะไรแก่ฝ่ายครัวเรือน",
+    "rawQuestion": "ในวงจรเศรษฐกิจ ฝ่ายผลิตให้อะไรแก่ฝ่ายครัวเรือน",
+    "choices": [
+      {
+        "text": "สินค้า-บริการ-รายได้",
+        "isCorrect": true
+      },
+      {
+        "text": "สินค้า-ผู้ประกอบการ-ลูกค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ประกอบการ-สินค้าและบริการ-รายได้",
+        "isCorrect": false
+      },
+      {
+        "text": "สินค้า-บริการ-รายจ่าย",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 116,
+    "question": "ข้อใดให้ความหมายของสถาบันการเงินในตลาดทุนได้ถูกต้องที่สุด",
+    "rawQuestion": "ข้อใดให้ความหมายของสถาบันการเงินในตลาดทุนได้ถูกต้องที่สุด",
+    "choices": [
+      {
+        "text": "สถาบันที่ออกหลักทรัพย์และการซื้อขายหลักทรัพย์ที่มีอายุกำหนดมากกว่า 1 ปี ซึ่งเป็นการให้กู้ยืมในระยะยาว โดยใช้เครื่องมือทางการเงินต่างๆ",
+        "isCorrect": true
+      },
+      {
+        "text": "ถูกทั้ง 2 ข้อ",
+        "isCorrect": false
+      },
+      {
+        "text": "ข้อ 1 ถูก",
+        "isCorrect": false
+      },
+      {
+        "text": "สถาบันที่ออกหลักทรัพย์และการซื้อขายหลักทรัพย์ที่มีอายุกำหนดมากกว่า 10 ปี ซึ่งเป็นการให้กู้ยืมในระยะยาว โดยใช้เครื่องมือทางการเงินต่างๆ",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 117,
+    "question": "ข้อใดคือสาเหตุสำคัญของการขาดดุลการค้าของประเทศไทย",
+    "rawQuestion": "ข้อใดคือสาเหตุสำคัญของการขาดดุลการค้าของประเทศไทย",
+    "choices": [
+      {
+        "text": "ปริมาณส่งออกสินค้าน้อยกว่าปริมาณนำเข้าสินค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "ผลผลิตทางเกษตรกรรมของไทยมีปริมาณน้อยกว่าต่างประเทศ",
+        "isCorrect": false
+      },
+      {
+        "text": "ค่าเงินบาทตกต่ำ",
+        "isCorrect": false
+      },
+      {
+        "text": "มูลค่านำเข้าสินค้ามากกว่ามูลค่าที่ได้รับจากการส่งออกสินค้า",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 118,
+    "question": "ค่าใช้จ่ายเหล่านี้ไม่ถือเป็นค่าใช้จ่ายของครัวเรือน ยกเว้น",
+    "rawQuestion": "ค่าใช้จ่ายเหล่านี้ไม่ถือเป็นค่าใช้จ่ายของครัวเรือน ยกเว้น",
+    "choices": [
+      {
+        "text": "ค่าผ่อนชำระบ้าน ที่ดิน",
+        "isCorrect": false
+      },
+      {
+        "text": "เงินบริจาค",
+        "isCorrect": true
+      },
+      {
+        "text": "เบี้ยประกันชีวิตชนิดสะสมทรัพย์",
+        "isCorrect": false
+      },
+      {
+        "text": "เงินสะสมกองทุนสำรองเลี้ยงชีพ/กบข.",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 119,
+    "question": "การลงนามตกลงเปิดเสรีทางการค้า (AFTA) ไทย-จีน ในปี 2546 เป็นการร่วมมือในระดับใด",
+    "rawQuestion": "การลงนามตกลงเปิดเสรีทางการค้า (AFTA) ไทย-จีน ในปี 2546 เป็นการร่วมมือในระดับใด",
+    "choices": [
+      {
+        "text": "ภูมิภาค",
+        "isCorrect": false
+      },
+      {
+        "text": "ทวิภาคี",
+        "isCorrect": true
+      },
+      {
+        "text": "พหุภาคี",
+        "isCorrect": false
+      },
+      {
+        "text": "อนุภาค",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 120,
+    "question": "ข้อใดคือความหมายที่ถูกต้องที่สุดของ \"นวัตกรรม\"",
+    "rawQuestion": "ข้อใดคือความหมายที่ถูกต้องที่สุดของ \"นวัตกรรม\"",
+    "choices": [
+      {
+        "text": "การกระทำที่เอาแบบอย่างมาจากที่อื่น",
+        "isCorrect": false
+      },
+      {
+        "text": "การกระทำที่ใช้แนวคิดหรือวิธีปฏิบัติใหม่ๆเพื่อแก้ปัญหาและพัฒนางาน",
+        "isCorrect": true
+      },
+      {
+        "text": "การกระทำที่ไม่เคยมีมาก่อน",
+        "isCorrect": false
+      },
+      {
+        "text": "การกระทำที่รื้อฟื้นมาจากของเดิม",
+        "isCorrect": false
+      }
+    ]
+  },
+  {
+    "origNo": 121,
+    "question": "ข้อใดต่อไปนี้คือความหมายของคำว่าผู้ประกอบการ",
+    "rawQuestion": "ข้อใดต่อไปนี้คือความหมายของคำว่าผู้ประกอบการ",
+    "choices": [
+      {
+        "text": "บุคคลที่มีความสามารถในการแสวงหาโอกาสและกำไรใช้โอกาสดเพื่อการสร้างความได้เปรียบ",
+        "isCorrect": false
+      },
+      {
+        "text": "บุคคลที่มีความสามารถในการแสวงหาโอกาสและสามารถใช้โอกาสดเพื่อการสร้างความได้เปรียบ",
+        "isCorrect": false
+      },
+      {
+        "text": "บุคคลที่มีความสามารถในการแสวงหารายได้และกำไรใช้โอกาสดเพื่อการสร้างความได้เปรียบ",
+        "isCorrect": false
+      },
+      {
+        "text": "บุคคลที่มีความสามารถในการแสวงหาโอกาสและการสร้างสรรค์ใช้โอกาสดเพื่อการสร้างความได้เปรียบ",
+        "isCorrect": true
+      }
+    ]
+  },
+  {
+    "origNo": 122,
+    "question": "ภาวะเงินเฟ้อทำให้บุคคลกลุ่มใดเสียประโยชน์",
+    "rawQuestion": "93. ภาวะเงินเฟ้อทำให้บุคคลกลุ่มใดเสียประโยชน์",
+    "choices": [
+      {
+        "text": "ลูกหนี้",
+        "isCorrect": false
+      },
+      {
+        "text": "พ่อค้าแม่ค้า",
+        "isCorrect": false
+      },
+      {
+        "text": "เจ้าของกิจการ",
+        "isCorrect": false
+      },
+      {
+        "text": "ผู้ที่มีรายได้จากค่าเช่า",
+        "isCorrect": true
+      }
+    ]
+  }
+];
+
+    const THAI_LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ'];
+
+    let state = {
+      isRandom: false,
+      questions: [],       // Active list of questions (with shuffled or original choices)
+      currentIndex: 0,     // Index in state.questions (0..121)
+      answers: {},         // Map: questionIndex -> selectedChoiceIndex
+      flagged: new Set(),  // Set of questionIndex
+      filter: 'all'        // 'all' | 'flagged' | 'unanswered' | 'wrong'
+    };
+
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function startQuiz(isRandom) {
+      state.isRandom = isRandom;
+      state.currentIndex = 0;
+      state.answers = {};
+      state.flagged = new Set();
+      state.filter = 'all';
+
+      // Clone questions
+      let qList = RAW_QUESTIONS.map(q => ({
+        origNo: q.origNo,
+        question: q.question,
+        choices: q.choices.map((c, idx) => ({
+          text: c.text,
+          isCorrect: c.isCorrect,
+          origChoiceIdx: idx
+        }))
+      }));
+
+      if (isRandom) {
+        qList = shuffleArray(qList);
+        qList.forEach(q => {
+          q.choices = shuffleArray(q.choices);
+        });
+      }
+
+      state.questions = qList;
+
+      // Switch screens
+      document.getElementById('start-screen').classList.remove('active');
+      document.getElementById('quiz-screen').classList.add('active');
+      document.getElementById('header-stats').style.display = 'flex';
+      document.getElementById('stat-mode').textContent = isRandom ? '🔀 โหมด: Random โจทย์+ช้อยส์' : '📋 โหมด: ไม่ Random';
+
+      updateFilterTabsUI();
+      renderAll();
+    }
+
+    function renderAll() {
+      renderQuestion();
+      renderSidebarGrid();
+      renderStats();
+    }
+
+    function renderQuestion() {
+      const q = state.questions[state.currentIndex];
+      if (!q) return;
+
+      const displayNo = state.currentIndex + 1;
+      const total = state.questions.length;
+
+      document.getElementById('q-display-no').textContent = `ข้อที่ ${displayNo} / ${total}`;
+      const docxBadge = document.getElementById('q-docx-no');
+      if (state.isRandom) {
+        docxBadge.textContent = `ข้อ ${displayNo} และ ข้อในไฟล์ .docx ${q.origNo}`;
+        docxBadge.style.display = 'inline-block';
+      } else {
+        docxBadge.textContent = `ข้อในไฟล์ .docx ${q.origNo}`;
+        docxBadge.style.display = 'inline-block';
+      }
+
+      document.getElementById('q-text').textContent = q.question;
+
+      // Flag button state
+      const isFlagged = state.flagged.has(state.currentIndex);
+      const flagBtn = document.getElementById('flag-btn');
+      document.getElementById('flag-icon').textContent = isFlagged ? '★' : '☆';
+      document.getElementById('flag-label').textContent = isFlagged ? 'ปักธง/ติดดาวแล้ว' : 'ปักธง / ติดดาว';
+      flagBtn.classList.toggle('active', isFlagged);
+
+      // Choices
+      const choicesList = document.getElementById('choices-list');
+      choicesList.innerHTML = '';
+
+      const userAns = state.answers[state.currentIndex];
+      const hasAnswered = userAns !== undefined;
+
+      q.choices.forEach((choice, cIdx) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        if (hasAnswered) {
+          btn.classList.add('locked');
+          if (choice.isCorrect) {
+            btn.classList.add('correct-choice');
+          } else if (userAns === cIdx && !choice.isCorrect) {
+            btn.classList.add('wrong-choice');
+          }
+        }
+
+        const letter = THAI_LETTERS[cIdx] || (cIdx + 1);
+        let statusIcon = '';
+        if (hasAnswered) {
+          if (choice.isCorrect) {
+            statusIcon = '<span class="choice-status-icon" style="color: var(--success);">✔ เฉลย</span>';
+          } else if (userAns === cIdx) {
+            statusIcon = '<span class="choice-status-icon" style="color: var(--danger);">✖ ที่เลือก</span>';
+          }
+        }
+
+        btn.innerHTML = `
+          <span class="choice-letter">${letter}</span>
+          <span class="choice-content">${choice.text}</span>
+          ${statusIcon}
+        `;
+
+        btn.onclick = () => selectChoice(cIdx);
+        choicesList.appendChild(btn);
+      });
+
+      // Feedback banner
+      const feedbackBox = document.getElementById('feedback-box');
+      const retryBtn = document.getElementById('retry-current-btn');
+
+      if (hasAnswered) {
+        const chosenObj = q.choices[userAns];
+        const correctChoices = q.choices
+          .map((c, idx) => ({ ...c, letter: THAI_LETTERS[idx] || (idx + 1) }))
+          .filter(c => c.isCorrect);
+
+        const correctText = correctChoices.map(c => `${c.letter}. ${c.text}`).join(' หรือ ');
+
+        feedbackBox.classList.add('show');
+        retryBtn.style.display = 'inline-flex';
+
+        if (chosenObj && chosenObj.isCorrect) {
+          feedbackBox.className = 'feedback-box show is-correct';
+          document.getElementById('feedback-icon').textContent = '🎉';
+          document.getElementById('feedback-title').textContent = 'ตอบถูกต้อง!';
+          document.getElementById('feedback-detail').innerHTML = `คำตอบที่ถูกต้องคือ <strong>${correctText}</strong>` +
+            (q.origNo === 3 ? ' <br><small>(หมายเหตุ: ข้อนี้ในไฟล์ .docx ต้นฉบับทำตัวหนาไว้ 2 ตัวเลือก ระบบจึงให้คะแนนทั้งสองข้อ)</small>' : '');
+        } else {
+          feedbackBox.className = 'feedback-box show is-wrong';
+          document.getElementById('feedback-icon').textContent = '💡';
+          document.getElementById('feedback-title').textContent = 'ตอบผิด! เฉลยคำตอบที่ถูกต้องคือ:';
+          document.getElementById('feedback-detail').innerHTML = `<strong>${correctText}</strong>`;
+        }
+      } else {
+        feedbackBox.className = 'feedback-box';
+        retryBtn.style.display = 'none';
+      }
+
+      // Prev / Next buttons
+      const visibleIndices = getFilteredIndices();
+      const posInFilter = visibleIndices.indexOf(state.currentIndex);
+      document.getElementById('prev-btn').disabled = (posInFilter <= 0 && state.currentIndex === 0);
+      document.getElementById('next-btn').disabled = (posInFilter !== -1 ? posInFilter >= visibleIndices.length - 1 : state.currentIndex >= state.questions.length - 1);
+    }
+
+    function selectChoice(choiceIdx) {
+      if (state.answers[state.currentIndex] !== undefined) return; // Already answered
+      state.answers[state.currentIndex] = choiceIdx;
+      renderAll();
+    }
+
+    function resetCurrentQuestion() {
+      delete state.answers[state.currentIndex];
+      renderAll();
+    }
+
+    function toggleFlag() {
+      if (state.flagged.has(state.currentIndex)) {
+        state.flagged.delete(state.currentIndex);
+      } else {
+        state.flagged.add(state.currentIndex);
+      }
+      renderAll();
+    }
+
+    function getFilteredIndices() {
+      const indices = [];
+      for (let i = 0; i < state.questions.length; i++) {
+        const ans = state.answers[i];
+        const isAnswered = ans !== undefined;
+        const isCorrect = isAnswered && state.questions[i].choices[ans]?.isCorrect;
+
+        if (state.filter === 'all') indices.push(i);
+        else if (state.filter === 'flagged' && state.flagged.has(i)) indices.push(i);
+        else if (state.filter === 'unanswered' && !isAnswered) indices.push(i);
+        else if (state.filter === 'wrong' && isAnswered && !isCorrect) indices.push(i);
+      }
+      return indices;
+    }
+
+    function setFilter(filterName) {
+      state.filter = filterName;
+      updateFilterTabsUI();
+
+      const visible = getFilteredIndices();
+      if (visible.length > 0 && !visible.includes(state.currentIndex)) {
+        state.currentIndex = visible[0];
+      }
+      renderAll();
+    }
+
+    function updateFilterTabsUI() {
+      document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === state.filter);
+      });
+      const filterNames = {
+        all: 'ทั้งหมด',
+        flagged: 'เฉพาะที่ติดดาว ⭐',
+        unanswered: 'เฉพาะข้อที่ยังไม่ทำ',
+        wrong: 'เฉพาะข้อที่ตอบผิด'
+      };
+      const count = getFilteredIndices().length;
+      document.getElementById('filter-indicator').textContent = `แสดง: ${filterNames[state.filter]} (${count} ข้อ)`;
+      document.getElementById('grid-count-label').textContent = `${count} ข้อ`;
+    }
+
+    function prevQuestion() {
+      const visible = getFilteredIndices();
+      const pos = visible.indexOf(state.currentIndex);
+      if (pos > 0) {
+        state.currentIndex = visible[pos - 1];
+      } else if (state.currentIndex > 0) {
+        state.currentIndex--;
+      }
+      renderAll();
+    }
+
+    function nextQuestion() {
+      const visible = getFilteredIndices();
+      const pos = visible.indexOf(state.currentIndex);
+      if (pos !== -1 && pos < visible.length - 1) {
+        state.currentIndex = visible[pos + 1];
+      } else if (pos === -1 && state.currentIndex < state.questions.length - 1) {
+        state.currentIndex++;
+      }
+      renderAll();
+    }
+
+    function jumpToNextFlagged() {
+      if (state.flagged.size === 0) {
+        alert('ยังไม่มีข้อที่ปักธง/ติดดาวไว้ สามารถกดปุ่ม "☆ ปักธง / ติดดาว" ที่มุมขวาบนของโจทย์ได้ครับ');
+        return;
+      }
+      const flaggedArr = Array.from(state.flagged).sort((a, b) => a - b);
+      const nextIdx = flaggedArr.find(idx => idx > state.currentIndex) ?? flaggedArr[0];
+      state.currentIndex = nextIdx;
+      renderAll();
+    }
+
+    function renderSidebarGrid() {
+      const grid = document.getElementById('q-grid');
+      grid.innerHTML = '';
+
+      const visible = getFilteredIndices();
+      updateFilterTabsUI();
+
+      if (visible.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 1.5rem 0.5rem; color: var(--text-muted); font-size: 0.85rem;">ไม่มีข้อสอบในหมวดนี้</div>`;
+        return;
+      }
+
+      visible.forEach(idx => {
+        const btn = document.createElement('button');
+        btn.className = 'q-grid-item';
+        if (idx === state.currentIndex) btn.classList.add('current');
+
+        const ans = state.answers[idx];
+        if (ans !== undefined) {
+          const isCorrect = state.questions[idx].choices[ans]?.isCorrect;
+          btn.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+        }
+
+        btn.title = state.isRandom
+          ? `ข้อที่ ${idx + 1} (ข้อในไฟล์ .docx ${state.questions[idx].origNo})`
+          : `ข้อที่ ${idx + 1}`;
+
+        btn.innerHTML = `${idx + 1}` + (state.flagged.has(idx) ? `<span class="flag-dot">★</span>` : '');
+        btn.onclick = () => {
+          state.currentIndex = idx;
+          renderAll();
+        };
+        grid.appendChild(btn);
+      });
+    }
+
+    function renderStats() {
+      const total = state.questions.length;
+      let answeredCount = 0;
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      Object.keys(state.answers).forEach(k => {
+        const qIdx = Number(k);
+        const cIdx = state.answers[qIdx];
+        answeredCount++;
+        if (state.questions[qIdx].choices[cIdx]?.isCorrect) {
+          correctCount++;
+        } else {
+          wrongCount++;
+        }
+      });
+
+      const pct = total > 0 ? Math.round((answeredCount / total) * 100) : 0;
+
+      document.getElementById('stat-progress').textContent = `ทำแล้ว ${answeredCount}/${total}`;
+      document.getElementById('stat-correct').textContent = `✔ ถูก ${correctCount}`;
+      document.getElementById('stat-wrong').textContent = `✖ ผิด ${wrongCount}`;
+      document.getElementById('stat-flagged').textContent = `★ ติดดาว ${state.flagged.size}`;
+
+      document.getElementById('progress-text').textContent = `ความคืบหน้า: ตอบแล้ว ${answeredCount} จาก ${total} ข้อ (${pct}%)`;
+      document.getElementById('progress-fill').style.width = `${pct}%`;
+    }
+
+    function showSummaryModal() {
+      const total = state.questions.length;
+      let correctCount = 0;
+      let wrongCount = 0;
+
+      Object.keys(state.answers).forEach(k => {
+        const qIdx = Number(k);
+        const cIdx = state.answers[qIdx];
+        if (state.questions[qIdx].choices[cIdx]?.isCorrect) correctCount++;
+        else wrongCount++;
+      });
+
+      const scorePct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+      document.getElementById('modal-score-pct').textContent = `${scorePct}%`;
+      document.getElementById('modal-score-raw').textContent = `${correctCount} / ${total}`;
+      document.getElementById('modal-correct').textContent = correctCount;
+      document.getElementById('modal-wrong').textContent = wrongCount;
+      document.getElementById('modal-flagged').textContent = state.flagged.size;
+
+      document.getElementById('summary-modal').classList.add('show');
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summary-modal').classList.remove('show');
+    }
+
+    function confirmRestart() {
+      const answeredCount = Object.keys(state.answers).length;
+      if (answeredCount > 0) {
+        const ok = confirm('ต้องการกลับไปหน้าเลือกโหมดเพื่อเริ่มใหม่ใช่หรือไม่? (ข้อมูลที่ตอบไว้ในรอบนี้จะถูกรีเซ็ต)');
+        if (!ok) return;
+      }
+      document.getElementById('quiz-screen').classList.remove('active');
+      document.getElementById('start-screen').classList.add('active');
+      document.getElementById('header-stats').style.display = 'none';
+    }
+
+    // Keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (!document.getElementById('quiz-screen').classList.contains('active')) return;
+      if (document.getElementById('summary-modal').classList.contains('show')) return;
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevQuestion();
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        nextQuestion();
+      } else if (['1', '2', '3', '4'].includes(e.key)) {
+        const idx = parseInt(e.key, 10) - 1;
+        const q = state.questions[state.currentIndex];
+        if (q && idx < q.choices.length) {
+          selectChoice(idx);
+        }
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFlag();
+      }
+    });
+  </script>
+</body>
+</html>
